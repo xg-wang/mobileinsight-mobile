@@ -6,7 +6,7 @@
 #############################
 
 # replace it with your path of mobileinsight-mobile
-mi_dev_path : /home/vagrant/mi-dev/mobileinsight-mobile
+mi_dev_path : /vagrant/mi-dev/mobileinsight-mobile
 
 # replace it with python-for-android storage dir
 p4a_path : /home/vagrant/.python-for-android
