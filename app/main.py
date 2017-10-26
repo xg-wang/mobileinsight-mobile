@@ -1,9 +1,12 @@
+import kivy
+kivy.require('1.4.0')
+
 from jnius import autoclass, cast
 from kivy.app import App
 from kivy.config import ConfigParser
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import *
+from kivy.properties import NumericProperty, StringProperty, BooleanProperty, ListProperty
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import platform
@@ -38,7 +41,6 @@ logger.addHandler(StreamHandler())
 # Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
-Builder.load_file('main_ui.kv')
 
 def create_folder():
 
@@ -167,10 +169,12 @@ def get_plugins_list():
 
 
 class MobileInsightApp(App):
-    manager = None
-    screen = None
+    index = NumericProperty(-1)
+    current_title = StringProperty()
+    available_screens = ListProperty([])
+    hierarchy = ListProperty([])
+
     use_kivy_settings = False
-    log_viewer = None
 
     def build_settings(self, settings):
 
@@ -262,8 +266,6 @@ class MobileInsightApp(App):
                     config.setdefaults(APP_NAME, default_val)
 
     def build(self):
-
-
         # Force to initialize all configs in .mobileinsight.ini
         # This prevents missing config due to existence of older-version .mobileinsight.ini
         # Work-around: force on_config_change, which would update config.ini
@@ -274,26 +276,70 @@ class MobileInsightApp(App):
         config.set('mi_general', 'bcheck_update', val)
         config.write()
 
-        self.manager = ScreenManager()
-        self.screen = screens.HomeScreen(name='HomeScreen', screen_manager=self.manager)
-        self.manager.add_widget(self.screen)
+        Window.borderless = False
+
+        # TODO: move some to __init__
+        self.title = 'MobileInsight'
+        self.screens = {}
+        self.available_screens = screens.__all__
+        self.manager = self.root.ids.sm
+        self.screen = screens.HomeScreen('HomeScreen')
+        self.screens[0] = self.screen
 
         try:
-            self.log_viewer_screen = screens.LogViewerScreen(
-                name='LogViewerScreen', screen_manager=self.manager)
-            self.manager.add_widget(self.log_viewer_screen)
+            self.log_viewer_screen = screens.LogViewerScreen(name='LogViewerScreen')
+            self.screens[1] = self.log_viewer_screen
         except Exception as e:
-            import crash_app
             logger.exception(traceback.format_exc())
             self.screen.ids.log_viewer.disabled = True
             self.screen.ids.stop_plugin.disabled = True
             self.screen.ids.run_plugin.disabled = True
 
-        self.manager.current = 'HomeScreen'
-        Window.borderless = False
+        self.go_next_screen()
 
-        # return self.screen
-        return self.manager
+
+    def on_current_title(self, instance, value):
+        self.root.ids.spnr.text = value
+
+    def go_previous_screen(self):
+        self.index = (self.index - 1) % len(self.available_screens)
+        screen = self.load_screen(self.index)
+        sm = self.root.ids.sm
+        if screen.name != sm.current:
+            sm.switch_to(screen, direction='right')
+            self.current_title = screen.name
+
+    def go_next_screen(self):
+        self.index = (self.index + 1) % len(self.available_screens)
+        print self.index
+        screen = self.load_screen(self.index)
+        sm = self.root.ids.sm
+        if screen.name != sm.current:
+            sm.switch_to(screen, direction='left')
+            self.current_title = screen.name
+
+    def go_screen(self, idx):
+        self.index = idx
+        self.root.ids.sm.switch_to(self.load_screen(idx), direction='left')
+
+    def go_hierarchy_previous(self):
+        ahr = self.hierarchy
+        if len(ahr) == 1:
+            return
+        if ahr:
+            ahr.pop()
+        if ahr:
+            idx = ahr.pop()
+            self.go_screen(idx)
+
+    def load_screen(self, index):
+        if index in self.screens:
+            return self.screens[index]
+        print self.available_screens[index]
+        screen = getattr(screens, self.available_screens[index])()
+        self.screens[index] = screen
+        return screen
+
 
     def on_pause(self):
         # Yuanjie: The following code prevents screen freeze when screen off ->
@@ -311,7 +357,6 @@ class MobileInsightApp(App):
                 if not pm.isScreenOn():
                     current_activity.moveTaskToBack(True)
             except Exception as e:
-                import crash_app
                 logger.exception(traceback.format_exc())
 
         # print "on_pause"

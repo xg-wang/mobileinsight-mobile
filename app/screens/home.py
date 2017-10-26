@@ -55,7 +55,7 @@ class HomeScreen(Screen):
     popupScroll.add_widget(myLayout)
     popup = Popup(content=popupScroll, title="Choose a plugin")
 
-    def __init__(self, name, screen_manager):
+    def __init__(self, name):
         """
         Initialization function. We will do the following task (in order):
             1. Check if the device is rooted
@@ -71,7 +71,6 @@ class HomeScreen(Screen):
         super(HomeScreen, self).__init__()
 
         self.name = name
-        self.screen_manager = screen_manager
 
         if not main_utils.is_rooted():
             # self.ids.log_viewer.disabled = False

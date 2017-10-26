@@ -10,6 +10,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
+from kivy.uix.label import Label
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -61,7 +62,9 @@ Builder.load_string('''
             text: 'GoBack'
             size: root.width*0.16, root.height*0.05
             pos: root.width*0.84, root.height*0.95
-            on_release: app.manager.current = 'HomeScreen'
+            on_release:
+                idx = app.available_screens.index('HomeScreen');
+                app.go_screen(idx)
         GridLayout:
             pos: 0, root.height*0.9
             size: root.width, root.height/20
@@ -122,12 +125,11 @@ class LogViewerScreen(Screen):
     ok = ObjectProperty(None)
     ReadComplete = ObjectProperty(None)
 
-    def __init__(self, name, screen_manager):
+    def __init__(self, name):
         super(LogViewerScreen, self).__init__()
         self._log_analyzer = None
         self.selectedTypes = None
         self.name = name
-        self.screen_manager = screen_manager
 
     def SetInitialGrid(self, *args):
         if self.ReadComplete == 'Yes':
@@ -137,13 +139,12 @@ class LogViewerScreen(Screen):
             self.onReset()
 
     def exit_open_popup(self, instance):
-        self.screen_manager.current = 'HomeScreen'
+        idx = self.app.available_screens.index('HomeScreen')
+        self.app.go_screen(idx)
         return False
 
     def dismiss_open_popup(self):
-
         self.open_popup.dismiss()
-        # self.screen_manager.current = 'HomeScreen'
         return False
 
     def dismiss_filter_popup(self, *args):
