@@ -9,8 +9,12 @@ Define utility variables and functions for apps.
 import subprocess as sp
 import os
 import re
+import logging
 import jnius
-from jnius import autoclass, cast, PythonJavaClass, java_method
+from jnius import autoclass
+
+# print log info to terminal
+logger = logging.getLogger(__name__)
 
 ANDROID_SHELL = "/system/bin/sh"
 
@@ -18,18 +22,23 @@ ANDROID_SHELL = "/system/bin/sh"
 #PythonService = autoclass('org.renpy.android.PythonService')
 
 # This one works with SDL2
-PythonActivity = autoclass('org.kivy.android.PythonActivity')
 PythonService  = autoclass('org.kivy.android.PythonService')
 
-pyService = PythonService.mService
 androidOsBuild = autoclass("android.os.Build")
 Context = autoclass('android.content.Context')
 File = autoclass("java.io.File")
 FileOutputStream = autoclass('java.io.FileOutputStream')
 ConnManager = autoclass('android.net.ConnectivityManager')
-mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
-telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
-locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
+
+# TODO: figure out what is PythonService?
+try:
+    pyService = PythonService.mService
+    mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
+    telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
+    locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
+except AttributeError as e:
+    import traceback
+    logger.exception(traceback.format_exc())
 
 def run_shell_cmd(cmd, wait=False):
     p = sp.Popen(
@@ -250,4 +259,4 @@ def get_last_known_location():
 
 def get_current_location():
     return get_last_known_location()
-    
+

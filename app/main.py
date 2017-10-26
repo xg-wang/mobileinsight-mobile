@@ -17,12 +17,13 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.utils import platform
-from log_viewer_app import LogViewerScreen
+import main_utils
+from service import mi2app_utils
+import screens
 import datetime
 import functools
 import jnius
 import json
-import main_utils
 import os
 import re
 import shlex
@@ -33,6 +34,7 @@ import sys
 import threading
 import time
 import traceback
+import logging
 
 # Load main UI
 Window.softinput_mode = "pan"
@@ -44,6 +46,8 @@ current_activity = cast("android.app.Activity", autoclass(
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
     "\nCopyright (c) 2015-2017 MobileInsight Team"
 
+# print log info to terminal
+logger = logging.getLogger(__name__)
 
 def create_folder():
 
@@ -146,10 +150,9 @@ def get_plugins_list():
                 ret[tmp_name] = (os.path.join(APP_DIR, f), False)
     else:  # create directory for user-customized apps
         create_folder()
-    
+
     return ret
 
-# class MobileInsightScreen(GridLayout):
 
 class MobileInsightScreen(Screen):
     error_log = StringProperty(LOGO_STRING)
@@ -160,13 +163,16 @@ class MobileInsightScreen(Screen):
     terminal_thread = None
     terminal_stop = None
     MAX_LINE = 30
-    logs = deque([],MAX_LINE)
+    logs = deque([], MAX_LINE)
     plugins = []
     selectedPlugin = ""
-    myLayout = GridLayout(cols = 2, spacing = 5, orientation = "vertical", size_hint_y = None, height = (len(get_plugins_list())/2+len(get_plugins_list())%2)*Window.height/4)
-    popupScroll = ScrollView(size_hint_y = None, size = (Window.width, Window.height*.9))
+    app_list = get_plugins_list()
+    myLayout = GridLayout(cols=2, spacing=5,
+        orientation="vertical", size_hint_y=None,
+        height=(len(app_list) / 2 + len(app_list) % 2) * Window.height / 4)
+    popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height*.9))
     popupScroll.add_widget(myLayout)
-    popup = Popup(content = popupScroll, title = "Choose a plugin")
+    popup = Popup(content=popupScroll, title="Choose a plugin")
     def __init__(self, name):
         """
         Initialization function. We will do the following task (in order):
@@ -226,7 +232,7 @@ class MobileInsightScreen(Screen):
             if os.path.exists(os.path.join(app_path, "readme.txt")):
                 with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
                     my_description = ff.read()
-            else: 
+            else:
                 my_description = "no description."
             #shortening long widget names and making font size
             shortenedName = shortenLabel.shorten(name)
@@ -271,12 +277,15 @@ class MobileInsightScreen(Screen):
         self.popup.dismiss()
 
     def log_info(self, msg):
+        logger.info(msg)
         self.append_log("[b][color=00ff00][INFO][/color][/b]: " + msg)
 
     def log_warning(self, msg):
+        logger.warning(msg)
         self.append_log("[b][color=00ffff][WARNING][/color][/b]: " + msg)
 
     def log_error(self, msg):
+        logger.error(msg)
         self.append_log("[b][color=ff0000][ERROR][/color][/b]: " + msg)
 
     def append_log(self, s):
@@ -471,12 +480,11 @@ class MobileInsightScreen(Screen):
                 lines = log_file.readlines()
                 if not lines:
                     log_file.seek(where)
-                else:    
+                else:
                     self.logs += lines
                     self.error_log = ''.join(self.logs)
             except Exception as e:
-                import traceback
-                print str(traceback.format_exc())
+                logger.exception(traceback.format_exc())
                 continue
 
     def run_script_callback(self):
@@ -492,7 +500,7 @@ class MobileInsightScreen(Screen):
                 # Load the "app_log" variable from namespace and print it out
                 self.append_log(namespace["app_log"])
             except BaseException:
-                print str(traceback.format_exc())
+                logger.exception(traceback.format_exc())
                 self.append_log(str(traceback.format_exc()))
                 no_error = False
 
@@ -576,7 +584,7 @@ class MobileInsightScreen(Screen):
         self.pluginAck = True
 
     def stop_service(self):
-        # Registe listener for 'MobileInsight.Plugin.StopServiceAck' intent
+        # Register listener for 'MobileInsight.Plugin.StopServiceAck' intent
         # from plugin
         self.log_info("Ready to stop current plugin ...")
         self.pluginAck = False
@@ -590,7 +598,6 @@ class MobileInsightScreen(Screen):
         try:
             current_activity.sendBroadcast(intent)
         except Exception as e:
-            import traceback
             self.log_error(str(traceback.format_exc()))
 
         if self.service:
@@ -678,7 +685,7 @@ class MobileInsightScreen(Screen):
 #        self.active = value
 #        self.dispatch("on_active")
 
-  
+
 class MobileInsightApp(App):
     screen = None
     use_kivy_settings = False
@@ -775,7 +782,7 @@ class MobileInsightApp(App):
 
     def build(self):
 
-        
+
         # Force to initialize all configs in .mobileinsight.ini
         # This prevents missing config due to existence of older-version .mobileinsight.ini
         # Work-around: force on_config_change, which would update config.ini
@@ -791,13 +798,12 @@ class MobileInsightApp(App):
         self.manager.add_widget(self.screen)
 
         try:
-            self.log_viewer_screen = LogViewerScreen(
+            self.log_viewer_screen = screens.LogViewerScreen(
                 name='LogViewerScreen', screen_manager=self.manager)
             self.manager.add_widget(self.log_viewer_screen)
         except Exception as e:
-            import traceback
             import crash_app
-            print str(traceback.format_exc())
+            logger.exception(traceback.format_exc())t_exc())
             self.screen.ids.log_viewer.disabled = True
             self.screen.ids.stop_plugin.disabled = True
             self.screen.ids.run_plugin.disabled = True
@@ -824,9 +830,8 @@ class MobileInsightApp(App):
                 if not pm.isScreenOn():
                     current_activity.moveTaskToBack(True)
             except Exception as e:
-                import traceback
                 import crash_app
-                print str(traceback.format_exc())
+                logger.exception(traceback.format_exc())t_exc())
 
         # print "on_pause"
         return True  # go into Pause mode
@@ -847,8 +852,7 @@ class MobileInsightApp(App):
                 import check_update
                 check_update.check_update()
         except Exception as e:
-            import traceback
-            print str(traceback.format_exc())
+            logger.exception(traceback.format_exc())t_exc())
 
     def on_start(self):
         from kivy.config import Config
@@ -857,13 +861,13 @@ class MobileInsightApp(App):
         self.check_update()
 
     def on_stop(self):
+        # TODO: should decouple plugin service stop from add stop
         self.screen.stop_service()
 
 if __name__ == "__main__":
     try:
         MobileInsightApp().run()
     except Exception as e:
-        import traceback
         import crash_app
-        print str(traceback.format_exc())
+        logger.exception(traceback.format_exc())t_exc())
         crash_app.CrashApp().run()

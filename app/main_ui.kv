@@ -43,10 +43,10 @@
             font_size: "24sp"
             on_release: root.on_click_plugin(root.selectedPlugin)
             background_normal: ""
-            background_color: [mainscreen.sColor[0]*4/5 + mainscreen.eColor[0]*1/5, mainscreen.sColor[1]*4/5+mainscreen.eColor[1]*1/5, mainscreen.sColor[2]*4/5 + mainscreen.eColor[2]*1/5, .85] 
+            background_color: [mainscreen.sColor[0]*4/5 + mainscreen.eColor[0]*1/5, mainscreen.sColor[1]*4/5+mainscreen.eColor[1]*1/5, mainscreen.sColor[2]*4/5 + mainscreen.eColor[2]*1/5, .85]
             color: 1,1,1,1
         Button:
-            text: 'Log Browser' 
+            text: 'Log Browser'
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: app.manager.current = 'LogViewerScreen'; app.log_viewer_screen.onOpen()
@@ -54,7 +54,7 @@
             background_color: [mainscreen.sColor[0]*2/5+mainscreen.eColor[0]*3/5, mainscreen.sColor[1]*2/5+mainscreen.eColor[1]*3/5, mainscreen.sColor[2]*2/5+mainscreen.eColor[2]*3/5, .85]
             color: 1,1,1,1
         Button:
-            text: 'Settings' 
+            text: 'Settings'
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: app.open_settings()
@@ -63,7 +63,7 @@
             color: 1,1,1,1
         Button:
             id: aboutButton
-            text: 'About' 
+            text: 'About'
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: root.about()

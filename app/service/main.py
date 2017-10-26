@@ -13,6 +13,8 @@ from kivy.config import ConfigParser
 
 from service import GpsListener
 
+# print log info to terminal
+logger = logging.getLogger(__name__)
 
 def receive_signal(signum, stack):
     print 'Received:', signum
@@ -119,8 +121,8 @@ if __name__ == "__main__":
         # add this dir to module search path
         sys.path.append(os.path.join(app_dir, app_path))
         app_file = os.path.join(app_dir, app_path, "main.mi2app")
-        print "Phone model: " + mi2app_utils.get_phone_model()
-        print "Running app: " + app_file
+        logger.info("Phone model: " + mi2app_utils.get_phone_model())
+        logger.info("Running app: " + app_file)
         # print arg,app_dir,os.path.join(app_dir, arg)
 
         namespace = {"service_context": mi2app_utils.get_service_context()}
@@ -139,7 +141,7 @@ if __name__ == "__main__":
                 plugin_config[item] = config.get(section_name, item)
 
         namespace["plugin_config"] = plugin_config
-# 
+
         gps_provider = GpsListener(on_gps)
         gps_provider.start()
 
@@ -148,10 +150,10 @@ if __name__ == "__main__":
         # print app_name, "stops normally"
 
     except Exception as e:
-        # print "Exceptions!!!"
-
         # Print traceback logs to analysis
         import traceback
+        tb_exc = traceback.format_exc()
+        logger.error(tb_exc)
         l = logging.getLogger("mobileinsight_logger")
-        l.error(str(traceback.format_exc()))
-        sys.exit(str(traceback.format_exc()))
+        l.error(tb_exc)
+        sys.exit(tb_exc)
