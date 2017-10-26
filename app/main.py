@@ -36,18 +36,22 @@ import time
 import traceback
 import logging
 
+# print log info to terminal
+logger = logging.getLogger('MOBILEINSIGHT ' + __name__)
+
+current_activity = cast("android.app.Activity", autoclass(
+    "org.kivy.android.PythonActivity").mActivity)
+SERVICE_DIR = os.path.join(
+    str(current_activity.getFilesDir().getAbsolutePath()), "app/service")
+sys.path.append(SERVICE_DIR)
+
 # Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 Builder.load_file('main_ui.kv')
-current_activity = cast("android.app.Activity", autoclass(
-    "org.kivy.android.PythonActivity").mActivity)
 
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
     "\nCopyright (c) 2015-2017 MobileInsight Team"
-
-# print log info to terminal
-logger = logging.getLogger(__name__)
 
 def create_folder():
 

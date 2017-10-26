@@ -6,6 +6,7 @@ import threading
 import time
 import traceback
 import logging
+from logging import StreamHandler
 import datetime as dt
 import signal
 
@@ -14,7 +15,8 @@ from kivy.config import ConfigParser
 from service import GpsListener
 
 # print log info to terminal
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('MOBILEINSIGHT SERVICE ' + __name__)
+logger.addHandler(StreamHandler())
 
 def receive_signal(signum, stack):
     print 'Received:', signum
