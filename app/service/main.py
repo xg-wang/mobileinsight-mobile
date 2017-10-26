@@ -1,4 +1,5 @@
-from service import mi2app_utils
+import kivy
+kivy.require('1.4.0')
 
 import os
 import sys
@@ -12,6 +13,7 @@ import signal
 
 from kivy.config import ConfigParser
 
+from service import mi2app_utils
 from service import GpsListener
 
 # print log info to terminal

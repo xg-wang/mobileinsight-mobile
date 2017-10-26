@@ -10,11 +10,15 @@ import subprocess as sp
 import os
 import re
 import logging
+from logging import StreamHandler
 import jnius
 from jnius import autoclass
 
 # print log info to terminal
+# basicConfig doesn't work for 'No handlers could be found for logger'
+# logging.basicConfig()
 logger = logging.getLogger(__name__)
+logger.addHandler(StreamHandler())
 
 ANDROID_SHELL = "/system/bin/sh"
 
@@ -30,7 +34,6 @@ File = autoclass("java.io.File")
 FileOutputStream = autoclass('java.io.FileOutputStream')
 ConnManager = autoclass('android.net.ConnectivityManager')
 
-# TODO: figure out what is PythonService?
 try:
     pyService = PythonService.mService
     mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)

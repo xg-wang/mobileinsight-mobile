@@ -11,6 +11,7 @@ TODO: more doc
 
 '''
 
-__all__ = ['LogViewerScreen']
+__all__ = ['HomeScreen', 'LogViewerScreen']
 
+from home import HomeScreen
 from logviewer import LogViewerScreen

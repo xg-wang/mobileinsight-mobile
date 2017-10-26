@@ -6,12 +6,10 @@ from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
-from kivy.uix.widget import Widget
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -63,7 +61,7 @@ Builder.load_string('''
             text: 'GoBack'
             size: root.width*0.16, root.height*0.05
             pos: root.width*0.84, root.height*0.95
-            on_release: app.manager.current = 'MobileInsightScreen'
+            on_release: app.manager.current = 'HomeScreen'
         GridLayout:
             pos: 0, root.height*0.9
             size: root.width, root.height/20
@@ -139,13 +137,13 @@ class LogViewerScreen(Screen):
             self.onReset()
 
     def exit_open_popup(self, instance):
-        self.screen_manager.current = 'MobileInsightScreen'
+        self.screen_manager.current = 'HomeScreen'
         return False
 
     def dismiss_open_popup(self):
 
         self.open_popup.dismiss()
-        # self.screen_manager.current = 'MobileInsightScreen'
+        # self.screen_manager.current = 'HomeScreen'
         return False
 
     def dismiss_filter_popup(self, *args):
