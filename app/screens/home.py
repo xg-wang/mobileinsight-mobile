@@ -23,6 +23,7 @@ from kivy.lang import Builder
 from main import get_plugins_list, create_folder
 import main_utils
 from main_utils import current_activity
+from . import MobileInsightScreenBase
 import traceback
 import logging
 from logging import StreamHandler
@@ -35,7 +36,7 @@ Builder.load_file('screens/home.kv')
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
     "\nCopyright (c) 2015-2017 MobileInsight Team"
 
-class HomeScreen(Screen):
+class HomeScreen(MobileInsightScreenBase):
     error_log = StringProperty(LOGO_STRING)
     default_app_name = StringProperty("")
     collecting = BooleanProperty(False)

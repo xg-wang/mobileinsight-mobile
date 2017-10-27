@@ -33,13 +33,15 @@ import sys
 import xml.dom.minidom
 import main_utils
 
+from . import MobileInsightScreenBase
+
 __all__ = ["LogViewerScreen"]
 
 #############################
 
 
 Builder.load_string('''
-<LogViewerScreen>:
+<LogViewerScreen@MobileInsightScreenBase>:
     grid: grid
     grid_scroll: grid_scroll
     GridLayout:
@@ -62,7 +64,7 @@ Builder.load_string('''
             text: 'GoBack'
             size: root.width*0.16, root.height*0.05
             pos: root.width*0.84, root.height*0.95
-            on_release: root.onGoBack()
+            on_release: root.onGoBack(app)
         GridLayout:
             pos: 0, root.height*0.9
             size: root.width, root.height/20
@@ -116,7 +118,7 @@ class Open_Popup(FloatLayout):
 #############################
 
 
-class LogViewerScreen(Screen):
+class LogViewerScreen(MobileInsightScreenBase):
     cancel = ObjectProperty(None)
     loaded = ObjectProperty(None)
     loadinggrid = ObjectProperty(None)
@@ -333,8 +335,8 @@ class LogViewerScreen(Screen):
 # GoBack
 # Go back to Home Screen
 
-    def onGoBack(self):
-        self.app.root.ids.sm.switch_to(self.app.home_screen)
+    def onGoBack(self, app):
+        app.root.ids.sm.switch_to(app.home_screen)
 
 
 # Filter
@@ -509,20 +511,5 @@ class LogViewerScreen(Screen):
             goto_failed_popup.open()
 
 
-#############################
-
-
-class LogViewerApp(App):
-    screen = ObjectProperty(None)
-
-    def build(self):
-        self.screen = LogViewerScreen()
-        return self.screen
-
-
 Factory.register('LogViewerScreen', cls=LogViewerScreen)
 Factory.register('Open_Popup', cls=Open_Popup)
-
-
-if __name__ == "__main__":
-    LogViewerApp().run()
