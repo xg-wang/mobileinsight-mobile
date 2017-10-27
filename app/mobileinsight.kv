@@ -22,13 +22,6 @@
 BoxLayout:
     orientation: 'vertical'
 
-    canvas.before:
-        Color:
-            rgb: .6, .6, .6
-        Rectangle:
-            size: self.size
-            source: 'data/background.png'
-
     ActionBar:
 
         ActionView:
@@ -49,18 +42,16 @@ BoxLayout:
                     app.go_screen(idx)
             ActionButton:
                 text: 'Previous screen'
-                icon: 'data/icons/prev.png'
+                icon: 'assets/icons/prev.png'
                 on_release: app.go_previous_screen()
 
             ActionButton:
                 text: 'Next screen'
-                icon: 'data/icons/next.png'
+                icon: 'assets/icons/next.png'
                 on_release: app.go_next_screen()
                 important: True
 
     ScreenManager:
         id: sm
         on_current_screen:
-            spnr.text = args[1].name
-            idx = app.available_screens.index(args[1].name)
-            if idx > -1: app.hierarchy.append(idx)
+            app.on_current_screen(args[1].name)

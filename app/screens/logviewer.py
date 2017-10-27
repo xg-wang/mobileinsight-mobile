@@ -62,9 +62,7 @@ Builder.load_string('''
             text: 'GoBack'
             size: root.width*0.16, root.height*0.05
             pos: root.width*0.84, root.height*0.95
-            on_release:
-                idx = app.available_screens.index('HomeScreen');
-                app.go_screen(idx)
+            on_release: root.onGoBack()
         GridLayout:
             pos: 0, root.height*0.9
             size: root.width, root.height/20
@@ -124,12 +122,12 @@ class LogViewerScreen(Screen):
     loadinggrid = ObjectProperty(None)
     ok = ObjectProperty(None)
     ReadComplete = ObjectProperty(None)
+    name = StringProperty('LogViewerScreen')
 
-    def __init__(self, name):
-        super(LogViewerScreen, self).__init__()
+    def __init__(self, **kw):
+        super(LogViewerScreen, self).__init__(**kw)
         self._log_analyzer = None
         self.selectedTypes = None
-        self.name = name
 
     def SetInitialGrid(self, *args):
         if self.ReadComplete == 'Yes':
@@ -331,6 +329,12 @@ class LogViewerScreen(Screen):
                 text='Loading...', font_size=self.width / 25)
             self.loading_num = 0
         self.loading_num += 1
+
+# GoBack
+# Go back to Home Screen
+
+    def onGoBack(self):
+        self.app.root.ids.sm.switch_to(self.app.home_screen)
 
 
 # Filter

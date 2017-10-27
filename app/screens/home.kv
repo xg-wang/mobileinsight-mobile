@@ -49,10 +49,7 @@
             text: 'Log Browser'
             size_hint_y: 2.5
             font_size: "24sp"
-            on_release:
-                idx = app.available_screens.index('LogViewerScreen');\
-                app.go_screen(idx);\
-                app.log_viewer_screen.onOpen()
+            on_release: app.open_log_viewer()
             background_normal: ""
             background_color: [mainscreen.sColor[0]*2/5+mainscreen.eColor[0]*3/5, mainscreen.sColor[1]*2/5+mainscreen.eColor[1]*3/5, mainscreen.sColor[2]*2/5+mainscreen.eColor[2]*3/5, .85]
             color: 1,1,1,1

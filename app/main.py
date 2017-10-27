@@ -13,6 +13,7 @@ from kivy.utils import platform
 import main_utils
 from main_utils import current_activity
 import screens
+from screens.logviewer import LogViewerScreen
 import datetime
 import functools
 import jnius
@@ -176,6 +177,14 @@ class MobileInsightApp(App):
 
     use_kivy_settings = False
 
+    def __init__(self, **kwargs):
+        super(MobileInsightApp, self).__init__(**kwargs)
+        self.title = 'MobileInsight'
+        self.screens = {}
+        self.available_screens = screens.__all__
+        self.home_screen = None
+        self.log_viewer_screen = None
+
     def build_settings(self, settings):
 
         with open("settings.json", "r") as settings_json:
@@ -278,25 +287,22 @@ class MobileInsightApp(App):
 
         Window.borderless = False
 
-        # TODO: move some to __init__
-        self.title = 'MobileInsight'
-        self.screens = {}
-        self.available_screens = screens.__all__
-        self.manager = self.root.ids.sm
-        self.screen = screens.HomeScreen('HomeScreen')
-        self.screens[0] = self.screen
-
-        try:
-            self.log_viewer_screen = screens.LogViewerScreen(name='LogViewerScreen')
-            self.screens[1] = self.log_viewer_screen
-        except Exception as e:
-            logger.exception(traceback.format_exc())
-            self.screen.ids.log_viewer.disabled = True
-            self.screen.ids.stop_plugin.disabled = True
-            self.screen.ids.run_plugin.disabled = True
+        self.home_screen = screens.HomeScreen()
+        self.screens[0] = self.home_screen
 
         self.go_next_screen()
 
+    def open_log_viewer(self):
+        try:
+            if self.log_viewer_screen is None:
+                self.log_viewer_screen = LogViewerScreen()
+            self.root.ids.sm.switch_to(self.log_viewer_screen)
+            self.log_viewer_screen.onOpen()
+        except Exception as e:
+            logger.exception(traceback.format_exc())
+            self.root.ids.log_viewer.disabled = True
+            self.root.ids.stop_plugin.disabled = True
+            self.root.ids.run_plugin.disabled = True
 
     def on_current_title(self, instance, value):
         self.root.ids.spnr.text = value
@@ -311,7 +317,6 @@ class MobileInsightApp(App):
 
     def go_next_screen(self):
         self.index = (self.index + 1) % len(self.available_screens)
-        print self.index
         screen = self.load_screen(self.index)
         sm = self.root.ids.sm
         if screen.name != sm.current:
@@ -320,7 +325,18 @@ class MobileInsightApp(App):
 
     def go_screen(self, idx):
         self.index = idx
-        self.root.ids.sm.switch_to(self.load_screen(idx), direction='left')
+        screen = self.load_screen(idx)
+        sm = self.root.ids.sm
+        if screen.name != sm.current:
+            sm.switch_to(self.load_screen(idx), direction='left')
+            self.current_title = screen.name
+
+    def on_current_screen(self, name):
+        self.root.ids.spnr.text = name
+        if name != 'LogViewerScreen':
+            idx = self.available_screens.index(name)
+            if idx > -1:
+                self.hierarchy.append(idx)
 
     def go_hierarchy_previous(self):
         ahr = self.hierarchy
@@ -335,7 +351,6 @@ class MobileInsightApp(App):
     def load_screen(self, index):
         if index in self.screens:
             return self.screens[index]
-        print self.available_screens[index]
         screen = getattr(screens, self.available_screens[index])()
         self.screens[index] = screen
         return screen
@@ -388,7 +403,7 @@ class MobileInsightApp(App):
 
     def on_stop(self):
         # TODO: should decouple plugin service stop from add stop
-        self.screen.stop_service()
+        self.home_screen.stop_service()
 
 if __name__ == "__main__":
     try:

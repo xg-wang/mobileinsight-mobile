@@ -54,8 +54,9 @@ class HomeScreen(Screen):
     popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height*.9))
     popupScroll.add_widget(myLayout)
     popup = Popup(content=popupScroll, title="Choose a plugin")
+    name = StringProperty('HomeScreen')
 
-    def __init__(self, name):
+    def __init__(self, **kw):
         """
         Initialization function. We will do the following task (in order):
             1. Check if the device is rooted
@@ -68,9 +69,9 @@ class HomeScreen(Screen):
             7. Load configurations from the setting panel (configs stored in /sdcard/.mobileinsight.ini)
         """
 
-        super(HomeScreen, self).__init__()
+        super(HomeScreen, self).__init__(**kw)
 
-        self.name = name
+        self.log_viewer = None
 
         if not main_utils.is_rooted():
             # self.ids.log_viewer.disabled = False
