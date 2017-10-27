@@ -44,5 +44,6 @@ class MobileInsightScreenBase(Screen):
         return super(MobileInsightScreenBase, self).add_widget(*args)
 
 from home import HomeScreen
+from demo import DemoScreen
 
-__all__ = ['HomeScreen']
+__all__ = ['HomeScreen', 'DemoScreen']

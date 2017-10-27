@@ -55,7 +55,6 @@ class HomeScreen(MobileInsightScreenBase):
     popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height*.9))
     popupScroll.add_widget(myLayout)
     popup = Popup(content=popupScroll, title="Choose a plugin")
-    name = StringProperty('HomeScreen')
 
     def __init__(self, **kw):
         """
