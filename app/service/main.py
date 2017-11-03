@@ -6,19 +6,14 @@ import sys
 import threading
 import time
 import traceback
-import logging
-from logging import StreamHandler
 import datetime as dt
 import signal
-
+from kivy.logger import Logger
 from kivy.config import ConfigParser
 
 from service import mi2app_utils
 from service import GpsListener
 
-# print log info to terminal
-logger = logging.getLogger('MOBILEINSIGHT SERVICE ' + __name__)
-logger.addHandler(StreamHandler())
 
 def receive_signal(signum, stack):
     print 'Received:', signum
@@ -125,8 +120,8 @@ if __name__ == "__main__":
         # add this dir to module search path
         sys.path.append(os.path.join(app_dir, app_path))
         app_file = os.path.join(app_dir, app_path, "main.mi2app")
-        logger.info("Phone model: " + mi2app_utils.get_phone_model())
-        logger.info("Running app: " + app_file)
+        Logger.info("Phone model: " + mi2app_utils.get_phone_model())
+        Logger.info("Running app: " + app_file)
         # print arg,app_dir,os.path.join(app_dir, arg)
 
         namespace = {"service_context": mi2app_utils.get_service_context()}
@@ -157,7 +152,7 @@ if __name__ == "__main__":
         # Print traceback logs to analysis
         import traceback
         tb_exc = traceback.format_exc()
-        logger.error(tb_exc)
+        Logger.error(tb_exc)
         l = logging.getLogger("mobileinsight_logger")
         l.error(tb_exc)
         sys.exit(tb_exc)

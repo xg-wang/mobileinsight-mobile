@@ -15,6 +15,7 @@ kivy.require('1.4.0')
 from kivy.uix.screenmanager import Screen
 from kivy.properties import BooleanProperty
 from kivy.lang import Builder
+from coordinator import Coordinator
 
 Builder.load_string('''
 #:kivy 1.4.0
@@ -36,12 +37,31 @@ Builder.load_string('''
 class MobileInsightScreenBase(Screen):
     fullscreen = BooleanProperty(False)
 
+    def __init__(self, **kw):
+        super(MobileInsightScreenBase, self).__init__(**kw)
+        self.coordinator = Coordinator()
+        self.configure_coordinator()
+
+    def configure_coordinator(self):
+        '''
+        Screens should override this method to setup the coordinator.
+        1. register analyzers to the monitor
+        2. register callback to analyzers to retrieve data for display
+        '''
+        raise NotImplementedError
+
+    def on_enter(self):
+        self.coordinator.start()
+
+    def on_leave(self):
+        # TODO: check kivy version? seems to be added since 1.6
+        self.coordinator.stop()
+
     def add_widget(self, *args):
-        print 'Base add_widget called'
-        print self
         if 'content' in self.ids:
             return self.ids.content.add_widget(*args)
         return super(MobileInsightScreenBase, self).add_widget(*args)
+
 
 from home import HomeScreen
 from demo import DemoScreen

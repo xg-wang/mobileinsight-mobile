@@ -25,11 +25,6 @@ import main_utils
 from main_utils import current_activity
 from . import MobileInsightScreenBase
 import traceback
-import logging
-from logging import StreamHandler
-
-logger = logging.getLogger(__name__)
-logger.addHandler(StreamHandler())
 
 Builder.load_file('screens/home.kv')
 
@@ -143,8 +138,10 @@ class HomeScreen(MobileInsightScreenBase):
                 self.start_service(default_app_name)
                 self.ids.run_plugin.text = "Stop Plugin: "+default_app_name
         except Exception as e:
-            logger.warning(traceback.format_exc())
+            Logger.warning(traceback.format_exc())
 
+    def configure_coordinator(self):
+        pass
 
     def registerBroadcastReceivers(self):
         self.brStopAck = BroadcastReceiver(self.on_broadcastStopServiceAck,
@@ -161,15 +158,15 @@ class HomeScreen(MobileInsightScreenBase):
         self.popup.dismiss()
 
     def log_info(self, msg):
-        logger.info(msg)
+        Logger.info(msg)
         self.append_log("[b][color=00ff00][INFO][/color][/b]: " + msg)
 
     def log_warning(self, msg):
-        logger.warning(msg)
+        Logger.warning(msg)
         self.append_log("[b][color=00ffff][WARNING][/color][/b]: " + msg)
 
     def log_error(self, msg):
-        logger.error(msg)
+        Logger.error(msg)
         self.append_log("[b][color=ff0000][ERROR][/color][/b]: " + msg)
 
     def append_log(self, s):
@@ -368,7 +365,7 @@ class HomeScreen(MobileInsightScreenBase):
                     self.logs += lines
                     self.error_log = ''.join(self.logs)
             except Exception as e:
-                logger.exception(traceback.format_exc())
+                Logger.exception(traceback.format_exc())
                 continue
 
     def run_script_callback(self):
@@ -384,7 +381,7 @@ class HomeScreen(MobileInsightScreenBase):
                 # Load the "app_log" variable from namespace and print it out
                 self.append_log(namespace["app_log"])
             except BaseException:
-                logger.exception(traceback.format_exc())
+                Logger.exception(traceback.format_exc())
                 self.append_log(str(traceback.format_exc()))
                 no_error = False
 
@@ -529,6 +526,9 @@ class HomeScreen(MobileInsightScreenBase):
         # p.communicate(chmodcmd + '\n')
         # p.wait()
         os.remove(self.__original_filename)
+
+    def on_leave(self):
+        self.stop_service()
 
     def about(self):
         about_text = ('MobileInsight ' + main_utils.get_cur_version() + ' \n'

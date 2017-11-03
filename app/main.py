@@ -28,12 +28,6 @@ import sys
 import threading
 import time
 import traceback
-import logging
-from logging import StreamHandler
-
-# print log info to terminal
-logger = logging.getLogger('MOBILEINSIGHT ' + __name__)
-logger.addHandler(StreamHandler())
 
 # not working
 # SERVICE_DIR = os.path.join(os.getcwd(), 'service')
@@ -299,7 +293,7 @@ class MobileInsightApp(App):
             self.root.ids.sm.switch_to(self.log_viewer_screen)
             self.log_viewer_screen.onOpen()
         except Exception as e:
-            logger.exception(traceback.format_exc())
+            Logger.exception(traceback.format_exc())
             self.root.ids.log_viewer.disabled = True
             self.root.ids.stop_plugin.disabled = True
             self.root.ids.run_plugin.disabled = True
@@ -372,7 +366,7 @@ class MobileInsightApp(App):
                 if not pm.isScreenOn():
                     current_activity.moveTaskToBack(True)
             except Exception as e:
-                logger.exception(traceback.format_exc())
+                Logger.exception(traceback.format_exc())
 
         # print "on_pause"
         return True  # go into Pause mode
@@ -393,7 +387,7 @@ class MobileInsightApp(App):
                 import check_update
                 check_update.check_update()
         except Exception as e:
-            logger.exception(traceback.format_exc())
+            Logger.exception(traceback.format_exc())
 
     def on_start(self):
         from kivy.config import Config
@@ -410,5 +404,5 @@ if __name__ == "__main__":
         MobileInsightApp().run()
     except Exception as e:
         import crash_app
-        logger.exception(traceback.format_exc())
+        Logger.exception(traceback.format_exc())
         crash_app.CrashApp().run()

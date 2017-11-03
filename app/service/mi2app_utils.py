@@ -9,16 +9,10 @@ Define utility variables and functions for apps.
 import subprocess as sp
 import os
 import re
-import logging
-from logging import StreamHandler
+import traceback
 import jnius
 from jnius import autoclass
-
-# print log info to terminal
-# basicConfig doesn't work for 'No handlers could be found for logger'
-# logging.basicConfig()
-logger = logging.getLogger(__name__)
-logger.addHandler(StreamHandler())
+from kivy.logger import Logger
 
 ANDROID_SHELL = "/system/bin/sh"
 
@@ -40,8 +34,8 @@ try:
     telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
     locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
 except AttributeError as e:
-    import traceback
-    logger.exception(traceback.format_exc())
+    Logger.exception(PythonService)
+    Logger.exception(traceback.format_exc())
 
 def run_shell_cmd(cmd, wait=False):
     p = sp.Popen(
