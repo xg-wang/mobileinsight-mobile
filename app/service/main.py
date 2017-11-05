@@ -24,18 +24,11 @@ sys.setdefaultencoding('utf8')
 
 service_api = '/mobileinsight'
 service_port = 3000
+coordinator_port = 3001
 oscid = None
 
 def receive_signal(signum, stack):
     print 'Received:', signum
-
-
-def alive_worker(secs):
-    """
-    Keep service alive
-    """
-    while True:
-        time.sleep(secs)
 
 class MyFormatter(logging.Formatter):
     converter = dt.datetime.fromtimestamp
@@ -162,30 +155,39 @@ def exec_legacy(arg):
         sys.exit(tb_exc)
 
 def setup_service(arg):
-    Logger.info('service: setup_service({})'.format(arg))
+    Logger.info('service: setup_service(%s)' % arg)
 
-    t = threading.Thread(target=alive_worker, args=(30.0,))
-    t.start()
+    def alive_worker(secs):
+        """
+        Keep service alive
+        """
+        while True:
+            Logger.info('service: ' + 'alive thread wakes')
+            time.sleep(secs)
 
-    app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
+    alive_thread = threading.Thread(target=alive_worker, args=(30.0,))
+    alive_thread.start()
+    Logger.info('service: ' + 'alive thread init')
+
     # add this dir to module search path
     app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
     # add this dir to module search path
     sys.path.append(os.path.join(app_dir, 'service'))
     # setup osc
     def dummy_osc_callback(msg, *args):
-        Logger.info('osc: ◀RECV service: ' + msg)
+        Logger.info('osc <RECV in service: ' + msg)
     osc.init()
     oscid = osc.listen(port=service_port)
     osc.bind(oscid, dummy_osc_callback, service_api)
+    Logger.info('service: ' + 'osc init')
 
     def coord_callback(event, *args):
-        Logger.info('osc: SEND► service: type of event is ' + event)
-        osc.sendMsg(service_api, dataArray=[event,], port=service_port)
+        Logger.info('osc SEND>: ' + 'hello')
+        osc.sendMsg(service_api, dataArray=['hello from service',], port=coordinator_port)
 
     cache_directory = mi2app_utils.get_cache_dir()
     log_directory = os.path.join(cache_directory, "mi2log")
-    globals()['service_context'] = mi2app_utils.get_service_context()
+    # TODO: can we delete this?
 
     [monitor_name, analyzers_names] = arg.split(';')
     analyzers_names = analyzers_names.split(',')
@@ -207,12 +209,7 @@ def setup_service(arg):
     src.set_log_directory(log_directory)
     src.set_skip_decoding(False)
     src.run()
-    alive_thread = threading.Thread(target=alive_worker, args=(30.0,))
-    alive_thread.start()
-
-    while True:
-        osc.readQueue(oscid)
-        time.sleep(.5)
+    Logger.info('service: ' + 'monitor starts')
 
 
 if __name__ == "__main__":
