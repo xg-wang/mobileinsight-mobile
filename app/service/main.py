@@ -10,10 +10,16 @@ import datetime as dt
 import signal
 from kivy.logger import Logger
 from kivy.config import ConfigParser
+from kivy.lib.osc import oscAPI as osc
+import logging
+from mobile_insight import monitor, analyzer
 
 from service import mi2app_utils
 from service import GpsListener
 
+
+service_api = '/mobileinsight'
+service_port = 3000
 
 def receive_signal(signum, stack):
     print 'Received:', signum
@@ -94,19 +100,14 @@ def on_gps(provider, eventname, *args):
 
     elif eventname == 'location':
         location = args[0]
-        # print 'on_gps()', location.getLatitude(), location.getLongitude()
+        Logger.info('on_gps: lat {}, lon {}'.format(location.getLatitude(), location.getLongitude()))
 
 
-if __name__ == "__main__":
-
+def exec_legacy(arg):
     try:
-        signal.signal(signal.SIGINT, receive_signal)
-
-        arg = os.getenv("PYTHON_SERVICE_ARGUMENT")  # get the argument passed
-
         tmp = arg.split(":")
         if len(tmp) < 2:
-            raise AssertionError("Error: incorrect service path:" + arg)
+            raise AssertionError("Error: incorrect service path: " + arg)
         app_name = tmp[0]
         app_path = tmp[1]
 
@@ -150,9 +151,74 @@ if __name__ == "__main__":
 
     except Exception as e:
         # Print traceback logs to analysis
-        import traceback
         tb_exc = traceback.format_exc()
         Logger.error(tb_exc)
         l = logging.getLogger("mobileinsight_logger")
         l.error(tb_exc)
         sys.exit(tb_exc)
+
+def setup_service(arg):
+    Logger.info('service: setup_service({})'.format(arg))
+
+    t = threading.Thread(target=alive_worker, args=(30.0,))
+    t.start()
+
+    app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
+    # add this dir to module search path
+    app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
+    # add this dir to module search path
+    sys.path.append(os.path.join(app_dir, 'service'))
+    # setup osc
+    def dummy_osc_callback(msg, *args):
+        Logger.info('osc: ◀RECV service: ' + msg)
+    osc.init()
+    oscid = osc.listen(ipAddr='127.0.0.1', port=service_port)
+    osc.bind(oscid, dummy_osc_callback, service_api)
+
+    def coord_callback(event, *args):
+        Logger.info('osc: SEND► service' + repr(event))
+        osc.sendMsg(service_api, [event], service_port)
+
+    cache_directory = mi2app_utils.get_cache_dir()
+    log_directory = os.path.join(cache_directory, "mi2log")
+    globals()['service_context'] = mi2app_utils.get_service_context()
+
+    [monitor_name, analyzers_names] = arg.split(';')
+    analyzers_names = analyzers_names.split(',')
+    try:
+        src = getattr(monitor, monitor_name)()
+
+        def create_analyzer(name):
+            a = getattr(analyzer, name)()
+            a.set_source(src)
+            a.register_coordinator_cb(coord_callback)
+            return a
+
+        analyzers = map(create_analyzer, analyzers_names)
+        Logger.info('monitor: {}'.format(repr(src)))
+        Logger.info('analyzers: {}'.format(repr(analyzers)))
+    except AttributeError as error:
+        Logger.error('service: Monitor class not found ' + error)
+        Logger.error(traceback.format_exc())
+
+    # run monitor
+    src.set_log_directory(log_directory)
+    src.set_skip_decoding(False)
+    src.run()
+
+    while True:
+        osc.readQueue(oscid)
+        time.sleep(.5)
+
+
+if __name__ == "__main__":
+    signal.signal(signal.SIGINT, receive_signal)
+
+    arg = os.getenv("PYTHON_SERVICE_ARGUMENT")  # get the argument passed
+
+    if arg is None:
+        Logger.error('No service arguments found')
+    elif ':' in arg:
+        exec_legacy(arg)
+    else:
+        setup_service(arg)

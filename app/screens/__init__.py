@@ -10,7 +10,6 @@ TODO: more doc
 
 '''
 import kivy
-kivy.require('1.4.0')
 
 from kivy.uix.screenmanager import Screen
 from kivy.properties import BooleanProperty
@@ -18,8 +17,6 @@ from kivy.lang import Builder
 from coordinator import Coordinator
 
 Builder.load_string('''
-#:kivy 1.4.0
-
 <MobileInsightScreenBase>:
     ScrollView:
         do_scroll_x: False
@@ -45,7 +42,7 @@ class MobileInsightScreenBase(Screen):
     def configure_coordinator(self):
         '''
         Screens should override this method to setup the coordinator.
-        1. register analyzers to the monitor
+        1. specify monitor, analyzers name to the monitor
         2. register callback to analyzers to retrieve data for display
         '''
         raise NotImplementedError
@@ -63,7 +60,6 @@ class MobileInsightScreenBase(Screen):
         return super(MobileInsightScreenBase, self).add_widget(*args)
 
 
-from home import HomeScreen
 from demo import DemoScreen
 
-__all__ = ['HomeScreen', 'DemoScreen']
+__all__ = ['DemoScreen']

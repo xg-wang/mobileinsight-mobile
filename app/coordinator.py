@@ -1,8 +1,9 @@
 import os
 import sys
 
-# Import MobileInsight modules
-from android.broadcast import BroadcastReceiver
+import android
+from kivy.lib.osc import oscAPI as osc
+from kivy.clock import Clock
 from jnius import autoclass
 from mobile_insight.analyzer import LteNasAnalyzer, UmtsNasAnalyzer
 from mobile_insight.monitor import OnlineMonitor
@@ -10,35 +11,15 @@ from service import mi2app_utils
 import traceback
 from kivy.logger import Logger
 
-def on_broadcast(context, intent):
-    '''
-    This plugin is going to be stopped, finish closure work
-    '''
-    IntentClass = autoclass("android.content.Intent")
-    intent = IntentClass()
-    action = 'MobileInsight.Plugin.StopServiceAck'
-    intent.setAction(action)
-    try:
-        mi2app_utils.pyService.sendBroadcast(intent)
-    except Exception:
-        Logger.exception(traceback.format_exc())
+service_port = 3000
 
 class Coordinator(object):
     def __init__(self):
-        self._monitor = None
+        self.title = ''
+        self.description = ''
+        self.monitor = None
         self._analyzers = []
         self._screen_callbacks = []
-
-    @property
-    def monitor(self):
-        return self._monitor
-
-    @monitor.setter
-    def monitor(self, m):
-        # TODO: stop the previous monitor if exists
-        if (self._monitor is not None):
-            self._monitor.stop()
-        self._monitor = m
 
     def register_analyzer(self, analyzer):
         self._analyzers.append(analyzer)
@@ -48,25 +29,24 @@ class Coordinator(object):
 
     def start(self):
         '''
-        Start collecting
+        Start service to setup monitor, analyzers,
+        use osc to listen for data update
         '''
-        if self.monitor is None:
-            Logger.warn("Monitor not set for coordinator.")
-            return
-        cache_directory = mi2app_utils.get_cache_dir()
-        log_directory = os.path.join(cache_directory, "mi2log")
-        self.monitor.set_log_directory(log_directory)
-        self.monitor.set_skip_decoding(False)
-        for analyzer in self._analyzers:
-            analyzer.set_source(self.monitor)
-
-        br = BroadcastReceiver(
-            on_broadcast, actions=['MobileInsight.Main.StopService'])
-        br.start()
-        self._monitor.run()
+        argstr = ';'.join([self.monitor, ','.join(self._analyzers)])
+        Logger.info('argstr: {}'.format(argstr))
+        android.start_service(title=self.title,
+                             description=self.description,
+                             arg=argstr)
+        osc.init()
+        oscid = osc.listen(ipAddr='127.0.0.1', port=service_port)
+        osc.bind(oscid, self.osc_callback, '/mobileinsight')
+        Clock.schedule_interval(lambda dt: osc.readQueue(oscid), .5)
 
     def stop(self):
-        # TODO: stop monitor
-        self.monitor.stop()
-        self._analyzers = []
-        self._screen_callbacks = []
+        osc.dontListen()
+        android.stop_service()
+
+    def osc_callback(self, message, *args):
+        Logger.info('osc: to coordinator: ' + message)
+        def G(f): return f(message[2])
+        map(G, self._screen_callbacks)

@@ -20,6 +20,7 @@ import datetime
 import shutil
 import stat
 import json
+from kivy.logger import Logger
 
 current_activity = cast("android.app.Activity", autoclass(
     "org.kivy.android.PythonActivity").mActivity)
@@ -295,3 +296,100 @@ def get_device_id():
     tupnum = re.findall("\d+", "".join(tup))
     deviceId = "".join(tupnum)
     return deviceId
+
+
+def init_libs():
+    """
+    Initialize libs required by MobileInsight.
+    It creates sym links to libs, and chmod of critical execs
+    """
+
+    if not is_rooted():
+        Logger.error(
+            "MobileInsight requires root privilege. \
+            Please root your device for correct functioning.")
+
+
+    libs_path = os.path.join(get_files_dir(), "data")
+    cmd = ""
+
+    libs_mapping = {
+        "libwireshark.so": [
+            "libwireshark.so.6", "libwireshark.so.6.0.1"], "libwiretap.so": [
+            "libwiretap.so.5", "libwiretap.so.5.0.1"], "libwsutil.so": [
+            "libwsutil.so.6", "libwsutil.so.6.0.0"]}
+    for lib in libs_mapping:
+        for sym_lib in libs_mapping[lib]:
+            # if not os.path.isfile(os.path.join(libs_path,sym_lib)):
+            if True:
+                # TODO: chown to restore ownership for the symlinks
+                cmd = cmd + " ln -s " + \
+                    os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
+
+    exes = ["diag_revealer",
+            "diag_revealer_mtk",
+            "android_pie_ws_dissector",
+            "android_ws_dissector"]
+    for exe in exes:
+        cmd = cmd + " chmod 755 " + os.path.join(libs_path, exe) + "; "
+
+    cmd = cmd + "chmod -R 755 " + libs_path
+    Logger.info('init libs: {}'.format(cmd))
+    run_shell_cmd(cmd)
+
+
+def check_security_policy():
+    """
+    Update SELinux policy.
+    For Nexus 6/6P, the SELinux policy may forbids the log collection.
+    """
+
+    cmd = "setenforce 0; "
+
+    cmd = cmd + "supolicy --live \"allow init logd dir getattr\";"
+
+    # # Depreciated supolicies. Still keep them for backup purpose
+    cmd = cmd + "supolicy --live \"allow init init process execmem\";"
+    cmd = cmd + \
+        "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
+    cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
+    cmd = cmd + \
+        "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+
+    # # Suspicious supolicies: MI works without them, but it seems that they SHOULD be enabled...
+
+    # # mi2log permission denied (logcat | grep denied), but no impact on log collection/analysis
+    cmd = cmd + \
+        "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
+
+    # # Suspicious: why still works after disabling this command? Won't FIFO fail?
+    cmd = cmd + \
+        "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
+
+    # Nexus 6 only
+    cmd = cmd + \
+        "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow rild diag_device chr_file {read write}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
+
+    cmd = cmd + \
+        "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
+
+    cmd = cmd + \
+        "supolicy --live \"allow wcnss_service fuse dir {read open search}\";"
+
+    cmd = cmd + \
+        "supolicy --live \"allow wcnss_service mnt_user_file lnk_file {read}\";"
+
+    cmd = cmd + \
+        "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
+
+    run_shell_cmd(cmd)

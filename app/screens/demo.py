@@ -12,16 +12,16 @@ Builder.load_file('screens/demo.kv')
 
 class DemoScreen(MobileInsightScreenBase):
     '''
-    mimic NasAnalysis
+    mimic rrcAnalysis
     '''
     def configure_coordinator(self):
-        # self.coordinator.monitor = OnlineMonitor()
-        # lte = LteNasAnalyzer()
-        # un = UmtsNasAnalyzer()
-        # for analyzer in [lte, un]:
-        #     analyzer.register_screen_cb(self._demo_callback)
-        #     self.coordinator.register_analyzer(analyzer)
+        self.coordinator.title = 'DemoCoordinator'
+        self.coordinator.description = 'This is the demo coordinator.'
+        self.coordinator.monitor = 'OnlineMonitor'
+        # self.coordinator.register_analyzer('WcdmaRrcAnalyzer')
+        self.coordinator.register_analyzer('LteNasAnalyzer')
+        # self.coordinator.register_analyzer('LteRrcAnalyzer')
+        self.coordinator.register_callback(self._demo_callback)
 
     def _demo_callback(self, event):
-        Logger.info(event)
-
+        Logger.info('DemoScreen: {}'.format(str(event)))

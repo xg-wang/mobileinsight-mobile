@@ -3,7 +3,8 @@ kivy.require('1.4.0')
 
 from jnius import autoclass, cast
 from kivy.app import App
-from kivy.config import ConfigParser
+from kivy.logger import Logger
+from kivy.config import ConfigParser, Config
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import NumericProperty, StringProperty, BooleanProperty, ListProperty
@@ -32,6 +33,8 @@ import traceback
 # not working
 # SERVICE_DIR = os.path.join(os.getcwd(), 'service')
 # sys.path.append(SERVICE_DIR)
+
+Config.set('kivy', 'log_level', 'debug')
 
 # Load main UI
 Window.softinput_mode = "pan"
@@ -142,27 +145,6 @@ def get_plugins_list():
     return ret
 
 
-
-#class LabeledCheckBox(GridLayout):
-#    active = BooleanProperty(False)
-#    text = StringProperty("")
-#    group = ObjectProperty(None, allownone=True)
-
-#    def __init__(self, **kwargs):
-#        self.register_event_type("on_active")
-#        super(LabeledCheckBox, self).__init__(**kwargs)
-#        self.active = kwargs.get("active", False)
-#        self.text = kwargs.get("text", False)
-#        self.group = kwargs.get("group", None)
-
-#    def on_active(self, *args):
-#        pass
-
-#    def callback(self, cb, value):
-#        self.active = value
-#        self.dispatch("on_active")
-
-
 class MobileInsightApp(App):
     index = NumericProperty(-1)
     current_title = StringProperty()
@@ -178,6 +160,8 @@ class MobileInsightApp(App):
         self.available_screens = screens.__all__
         self.home_screen = None
         self.log_viewer_screen = None
+        main_utils.init_libs()
+        main_utils.check_security_policy()
 
     def build_settings(self, settings):
 
@@ -281,8 +265,8 @@ class MobileInsightApp(App):
 
         Window.borderless = False
 
-        self.home_screen = screens.HomeScreen()
-        self.screens[0] = self.home_screen
+        # self.home_screen = screens.HomeScreen()
+        # self.screens[0] = self.home_screen
 
         self.go_next_screen()
 
