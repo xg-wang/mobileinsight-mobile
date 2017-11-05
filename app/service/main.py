@@ -182,8 +182,8 @@ def setup_service(arg):
     Logger.info('service: ' + 'osc init')
 
     def coord_callback(event, *args):
-        Logger.info('osc SEND>: ' + 'hello')
-        osc.sendMsg(service_api, dataArray=['hello from service',], port=coordinator_port)
+        Logger.info('osc SEND>: ' + str(event))
+        osc.sendMsg(service_api, dataArray=[str(event),], port=coordinator_port)
 
     cache_directory = mi2app_utils.get_cache_dir()
     log_directory = os.path.join(cache_directory, "mi2log")
