@@ -20,7 +20,7 @@ class DemoScreen(MobileInsightScreenBase):
         self.coordinator.monitor = 'OnlineMonitor'
         # self.coordinator.register_analyzer('WcdmaRrcAnalyzer')
         self.coordinator.register_analyzer('LteNasAnalyzer')
-        # self.coordinator.register_analyzer('LteRrcAnalyzer')
+        self.coordinator.register_analyzer('LteRrcAnalyzer')
         self.coordinator.register_callback(self._demo_callback)
 
     def _demo_callback(self, event):

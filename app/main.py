@@ -34,8 +34,6 @@ import traceback
 # SERVICE_DIR = os.path.join(os.getcwd(), 'service')
 # sys.path.append(SERVICE_DIR)
 
-Config.set('kivy', 'log_level', 'debug')
-
 # Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
@@ -278,9 +276,9 @@ class MobileInsightApp(App):
             self.log_viewer_screen.onOpen()
         except Exception as e:
             Logger.exception(traceback.format_exc())
-            self.root.ids.log_viewer.disabled = True
-            self.root.ids.stop_plugin.disabled = True
-            self.root.ids.run_plugin.disabled = True
+            # self.root.ids.log_viewer.disabled = True
+            # self.root.ids.stop_plugin.disabled = True
+            # self.root.ids.run_plugin.disabled = True
 
     def on_current_title(self, instance, value):
         self.root.ids.spnr.text = value
@@ -381,7 +379,9 @@ class MobileInsightApp(App):
 
     def on_stop(self):
         # TODO: should decouple plugin service stop from add stop
-        self.home_screen.stop_service()
+        # self.home_screen.stop_service()
+        sm = self.root.ids.sm
+        sm.current_screen.coordinator.stop()
 
 if __name__ == "__main__":
     try:

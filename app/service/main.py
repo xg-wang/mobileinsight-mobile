@@ -1,3 +1,4 @@
+# encoding=utf8
 import kivy
 kivy.require('1.4.0')
 
@@ -17,9 +18,13 @@ from mobile_insight import monitor, analyzer
 from service import mi2app_utils
 from service import GpsListener
 
+reload(sys)
+sys.setdefaultencoding('utf8')
+
 
 service_api = '/mobileinsight'
 service_port = 3000
+oscid = None
 
 def receive_signal(signum, stack):
     print 'Received:', signum
@@ -31,7 +36,6 @@ def alive_worker(secs):
     """
     while True:
         time.sleep(secs)
-
 
 class MyFormatter(logging.Formatter):
     converter = dt.datetime.fromtimestamp
@@ -172,12 +176,12 @@ def setup_service(arg):
     def dummy_osc_callback(msg, *args):
         Logger.info('osc: ◀RECV service: ' + msg)
     osc.init()
-    oscid = osc.listen(ipAddr='127.0.0.1', port=service_port)
+    oscid = osc.listen(port=service_port)
     osc.bind(oscid, dummy_osc_callback, service_api)
 
     def coord_callback(event, *args):
-        Logger.info('osc: SEND► service' + repr(event))
-        osc.sendMsg(service_api, [event], service_port)
+        Logger.info('osc: SEND► service: type of event is ' + event)
+        osc.sendMsg(service_api, dataArray=[event,], port=service_port)
 
     cache_directory = mi2app_utils.get_cache_dir()
     log_directory = os.path.join(cache_directory, "mi2log")
@@ -195,8 +199,6 @@ def setup_service(arg):
             return a
 
         analyzers = map(create_analyzer, analyzers_names)
-        Logger.info('monitor: {}'.format(repr(src)))
-        Logger.info('analyzers: {}'.format(repr(analyzers)))
     except AttributeError as error:
         Logger.error('service: Monitor class not found ' + error)
         Logger.error(traceback.format_exc())
@@ -205,6 +207,8 @@ def setup_service(arg):
     src.set_log_directory(log_directory)
     src.set_skip_decoding(False)
     src.run()
+    alive_thread = threading.Thread(target=alive_worker, args=(30.0,))
+    alive_thread.start()
 
     while True:
         osc.readQueue(oscid)

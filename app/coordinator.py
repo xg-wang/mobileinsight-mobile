@@ -2,8 +2,11 @@ import os
 import sys
 
 import android
+import threading
+from time import sleep
 from kivy.lib.osc import oscAPI as osc
 from kivy.clock import Clock
+from kivy.utils import platform
 from jnius import autoclass
 from mobile_insight.analyzer import LteNasAnalyzer, UmtsNasAnalyzer
 from mobile_insight.monitor import OnlineMonitor
@@ -32,15 +35,22 @@ class Coordinator(object):
         Start service to setup monitor, analyzers,
         use osc to listen for data update
         '''
+        if platform != 'android':
+            Logger.error('Platform is not android, start service fail.')
+            return
         argstr = ';'.join([self.monitor, ','.join(self._analyzers)])
-        Logger.info('argstr: {}'.format(argstr))
+        Logger.info('argstr: ' + argstr)
+
         android.start_service(title=self.title,
                              description=self.description,
                              arg=argstr)
         osc.init()
-        oscid = osc.listen(ipAddr='127.0.0.1', port=service_port)
+        oscid = osc.listen(port=service_port)
         osc.bind(oscid, self.osc_callback, '/mobileinsight')
-        Clock.schedule_interval(lambda dt: osc.readQueue(oscid), .5)
+        Clock.schedule_interval(lambda *x: osc.readQueue(thread_id=oscid), .5)
+        # while True:
+        #     osc.readQueue(thread_id=oscid)
+        #     sleep(.5)
 
     def stop(self):
         osc.dontListen()
