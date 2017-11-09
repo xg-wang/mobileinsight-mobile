@@ -2,6 +2,7 @@ import kivy
 kivy.require('1.4.0')
 
 from kivy.lang import Builder
+from kivy.properties import StringProperty
 from mobile_insight.analyzer import LteNasAnalyzer, UmtsNasAnalyzer
 from mobile_insight.monitor import OnlineMonitor
 import traceback
@@ -14,9 +15,10 @@ class DemoScreen(MobileInsightScreenBase):
     '''
     mimic rrcAnalysis
     '''
+
+    current_log = StringProperty('')
+
     def configure_coordinator(self):
-        self.coordinator.title = 'DemoCoordinator'
-        self.coordinator.description = 'This is the demo coordinator.'
         self.coordinator.monitor = 'OnlineMonitor'
         # self.coordinator.register_analyzer('WcdmaRrcAnalyzer')
         self.coordinator.register_analyzer('LteNasAnalyzer')
@@ -24,4 +26,8 @@ class DemoScreen(MobileInsightScreenBase):
         self.coordinator.register_callback(self._demo_callback)
 
     def _demo_callback(self, event):
-        Logger.info('DemoScreen: {}'.format(str(event)))
+        Logger.info('DemoScreen: ' + str(event))
+        string = str(event)
+        if (len(string) < 40):
+            Logger.info('DemoScreen: ' + 'show event')
+            self.current_log = string

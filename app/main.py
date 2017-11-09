@@ -160,6 +160,8 @@ class MobileInsightApp(App):
         self.log_viewer_screen = None
         main_utils.init_libs()
         main_utils.check_security_policy()
+        main_utils.setup_osc()
+        main_utils.setup_service()
 
     def build_settings(self, settings):
 
@@ -372,16 +374,18 @@ class MobileInsightApp(App):
             Logger.exception(traceback.format_exc())
 
     def on_start(self):
-        from kivy.config import Config
         Config.set('kivy', 'exit_on_escape', 0)
 
         self.check_update()
 
     def on_stop(self):
+        main_utils.stop_osc()
+        main_utils.stop_service()
         # TODO: should decouple plugin service stop from add stop
         # self.home_screen.stop_service()
         sm = self.root.ids.sm
         sm.current_screen.coordinator.stop()
+
 
 if __name__ == "__main__":
     try:
