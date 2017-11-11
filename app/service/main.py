@@ -1,6 +1,5 @@
 # encoding=utf8
-import kivy
-kivy.require('1.4.0')
+import logging
 
 import os
 import sys
@@ -12,20 +11,16 @@ import signal
 from kivy.logger import Logger
 from kivy.config import ConfigParser
 from kivy.lib.osc import oscAPI as osc
-import logging
-from mobile_insight import monitor, analyzer
-
+from main_utils import OSCConfig
+from service.control import Control
 from service import mi2app_utils
 from service import GpsListener
+import kivy
+kivy.require('1.4.0')
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-
-service_api = '/mobileinsight'
-service_port = 3000
-coordinator_port = 3001
-oscid = None
 
 def receive_signal(signum, stack):
     print 'Received:', signum
@@ -154,16 +149,16 @@ def exec_legacy(arg):
         l.error(tb_exc)
         sys.exit(tb_exc)
 
-def setup_service(arg):
-    Logger.info('service: setup_service(%s)' % arg)
+def alive_worker(secs):
+    """
+    Keep service alive
+    """
+    while True:
+        Logger.info('service: ' + 'alive thread wakes')
+        time.sleep(secs)
 
-    def alive_worker(secs):
-        """
-        Keep service alive
-        """
-        while True:
-            Logger.info('service: ' + 'alive thread wakes')
-            time.sleep(secs)
+def setup_service():
+    Logger.info('service: setup_service')
 
     alive_thread = threading.Thread(target=alive_worker, args=(30.0,))
     alive_thread.start()
@@ -171,45 +166,18 @@ def setup_service(arg):
 
     # add this dir to module search path
     app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
-    # add this dir to module search path
     sys.path.append(os.path.join(app_dir, 'service'))
-    # setup osc
-    def dummy_osc_callback(msg, *args):
-        Logger.info('osc <RECV in service: ' + msg)
+
+    # setup control and listen to osc signal
+    control = Control()
     osc.init()
-    oscid = osc.listen(port=service_port)
-    osc.bind(oscid, dummy_osc_callback, service_api)
-    Logger.info('service: ' + 'osc init')
+    osc_id = osc.listen(port=OSCConfig.service_port)
+    osc.bind(osc_id, control.osc_callback, OSCConfig.control_addr)
+    Logger.info('service: ' + 'control and osc setup')
 
-    def coord_callback(event, *args):
-        Logger.info('osc SEND>: ' + str(event))
-        osc.sendMsg(service_api, dataArray=[str(event),], port=coordinator_port)
-
-    cache_directory = mi2app_utils.get_cache_dir()
-    log_directory = os.path.join(cache_directory, "mi2log")
-    # TODO: can we delete this?
-
-    [monitor_name, analyzers_names] = arg.split(';')
-    analyzers_names = analyzers_names.split(',')
-    try:
-        src = getattr(monitor, monitor_name)()
-
-        def create_analyzer(name):
-            a = getattr(analyzer, name)()
-            a.set_source(src)
-            a.register_coordinator_cb(coord_callback)
-            return a
-
-        analyzers = map(create_analyzer, analyzers_names)
-    except AttributeError as error:
-        Logger.error('service: Monitor class not found ' + error)
-        Logger.error(traceback.format_exc())
-
-    # run monitor
-    src.set_log_directory(log_directory)
-    src.set_skip_decoding(False)
-    src.run()
-    Logger.info('service: ' + 'monitor starts')
+    # use osc control instead
+    # [monitor_name, analyzers_names] = arg.split(';')
+    # analyzers_names = analyzers_names.split(',')
 
 
 if __name__ == "__main__":
@@ -222,4 +190,4 @@ if __name__ == "__main__":
     elif ':' in arg:
         exec_legacy(arg)
     else:
-        setup_service(arg)
+        setup_service()
