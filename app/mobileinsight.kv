@@ -1,57 +1,86 @@
-#:kivy 1.4.0
-#:import Factory kivy.factory.Factory
+#:import Toolbar kivymd.toolbar.Toolbar
+#:import ThemeManager kivymd.theming.ThemeManager
+#:import MDNavigationDrawer kivymd.navigationdrawer.MDNavigationDrawer
+#:import NavigationLayout kivymd.navigationdrawer.NavigationLayout
+#:import NavigationDrawerDivider kivymd.navigationdrawer.NavigationDrawerDivider
+#:import NavigationDrawerToolbar kivymd.navigationdrawer.NavigationDrawerToolbar
+#:import NavigationDrawerSubheader kivymd.navigationdrawer.NavigationDrawerSubheader
+#:import MDCheckbox kivymd.selectioncontrols.MDCheckbox
+#:import MDSwitch kivymd.selectioncontrols.MDSwitch
+#:import MDList kivymd.list.MDList
+#:import OneLineListItem kivymd.list.OneLineListItem
+#:import TwoLineListItem kivymd.list.TwoLineListItem
+#:import ThreeLineListItem kivymd.list.ThreeLineListItem
+#:import OneLineAvatarListItem kivymd.list.OneLineAvatarListItem
+#:import OneLineIconListItem kivymd.list.OneLineIconListItem
+#:import OneLineAvatarIconListItem kivymd.list.OneLineAvatarIconListItem
+#:import MDTextField kivymd.textfields.MDTextField
+#:import MDSpinner kivymd.spinner.MDSpinner
+#:import MDCard kivymd.card.MDCard
+#:import MDSeparator kivymd.card.MDSeparator
+#:import MDDropdownMenu kivymd.menu.MDDropdownMenu
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import colors kivymd.color_definitions.colors
+#:import SmartTile kivymd.grid.SmartTile
+#:import MDSlider kivymd.slider.MDSlider
+#:import MDTabbedPanel kivymd.tabs.MDTabbedPanel
+#:import MDTab kivymd.tabs.MDTab
+#:import MDProgressBar kivymd.progressbar.MDProgressBar
+#:import MDThemePicker kivymd.theme_picker.MDThemePicker
+#:import MDBottomNavigation kivymd.tabs.MDBottomNavigation
+#:import MDBottomNavigationItem kivymd.tabs.MDBottomNavigationItem
+#:import Toolbar kivymd.toolbar.Toolbar
 
-<ActionSpinnerOptions@SpinnerOption>
-    background_color: .4, .4, .4, 1
+#:import MapSource mapview.MapSource
 
-<ActionSpinner@Spinner+ActionItem>
-    canvas.before:
-        Color:
-            rgba: 0.128, 0.128, 0.128, 1
-        Rectangle:
-            size: self.size
-            pos: self.pos
-    border: 27, 20, 12, 12
-    background_normal: 'atlas://data/images/defaulttheme/action_group'
-    option_cls: Factory.ActionSpinnerOptions
+NavigationLayout:
+    id: nav_layout
+    MDNavigationDrawer:
+        id: nav_drawer
+        NavigationDrawerToolbar:
+            title: "MobileInsight"
 
-<ActionDropdown>:
-    on_size: self.width = '220dp'
+        NavigationDrawerIconButton:
+            icon: 'radio-tower'
+            text: "Radio"
+            #on_release: app.root.ids.scr_mngr.current = 'radio'; app.root.ids.toolbar.title = self.text
+            on_release:app.go_screen(0); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'database'
+            text: "Data-plane Statistics"
+            #on_release: app.root.ids.scr_mngr.current = 'dataplane'; app.root.ids.toolbar.title = self.text
+            on_release:app.go_screen(1); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'lan-connect'
+            text: "Connectivity Information"
+            #on_release: app.root.ids.scr_mngr.current = 'connectivity'; app.root.ids.toolbar.title = self.text
+            on_release:app.go_screen(2); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'phone'
+            text: "Mobility Information"
+            #on_release: app.root.ids.scr_mngr.current = 'mobility'; app.root.ids.toolbar.title = self.text
+            on_release:app.go_screen(3); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'voice'
+            text: "Data/Voice Service"
+            #on_release: app.root.ids.scr_mngr.current = 'datavoice'; app.root.ids.toolbar.title = self.text
+            on_release:app.go_screen(4); app.root.ids.toolbar.title = self.text
 
+        NavigationDrawerIconButton:
+            icon: 'settings'
+            text: "Change Themes"
+            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
+            on_release:app.go_screen(5); app.root.ids.toolbar.title = self.text
 
-BoxLayout:
-    orientation: 'vertical'
-
-    ActionBar:
-
-        ActionView:
-            id: av
-            ActionPrevious:
-                with_previous: (False if sm.current_screen.name == 'button' else True) if sm.current_screen else False
-                title: 'Showcase' + ('' if not app.current_title else ' - {}'.format(app.current_title))
-                on_release: app.go_hierarchy_previous()
-
-            ActionSpinner:
-                id: spnr
-                important: True
-                text: 'Jump to Screen'
-                values: app.available_screens
-                on_text:
-                    if sm.current != args[1]:\
-                    idx = app.available_screens.index(args[1]);\
-                    app.go_screen(idx)
-            ActionButton:
-                text: 'Previous screen'
-                icon: 'assets/icons/prev.png'
-                on_release: app.go_previous_screen()
-
-            ActionButton:
-                text: 'Next screen'
-                icon: 'assets/icons/next.png'
-                on_release: app.go_next_screen()
-                important: True
-
-    ScreenManager:
-        id: sm
-        on_current_screen:
-            app.on_current_screen(args[1].name)
+    BoxLayout:
+        orientation: 'vertical'
+        Toolbar:
+            id: toolbar
+            title: 'Radio'
+            md_bg_color: app.theme_cls.primary_color
+            background_palette: 'Primary'
+            background_hue: '500'
+            left_action_items: [['menu', lambda x: app.root.toggle_nav_drawer()]]
+            right_action_items: [['dots-vertical', lambda x: app.root.toggle_nav_drawer()]]
+        ScreenManager:
+            id: scr_mngr

@@ -4,13 +4,28 @@ kivy.require('1.4.0')
 from jnius import autoclass, cast
 from kivy.app import App
 from kivy.logger import Logger
+from kivy.metrics import dp
+from kivy.uix.image import Image
 from kivy.config import ConfigParser, Config
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import NumericProperty, StringProperty, BooleanProperty, ListProperty
+from kivy.properties import ObjectProperty,NumericProperty,StringProperty,ListProperty
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import platform
+
+from kivymd.button import MDIconButton
+from kivymd.date_picker import MDDatePicker
+from kivymd.dialog import MDDialog
+from kivymd.label import MDLabel
+from kivymd.list import ILeftBody, ILeftBodyTouch, IRightBodyTouch, BaseListItem
+from kivymd.material_resources import DEVICE_TYPE
+from kivymd.navigationdrawer import MDNavigationDrawer, NavigationDrawerHeaderBase
+from kivymd.selectioncontrols import MDCheckbox
+from kivymd.snackbar import Snackbar
+from kivymd.theming import ThemeManager
+from kivymd.time_picker import MDTimePicker
+
 import main_utils
 from main_utils import current_activity
 import screens
@@ -144,10 +159,13 @@ def get_plugins_list():
 
 
 class MobileInsightApp(App):
-    index = NumericProperty(-1)
+    theme_cls = ThemeManager()
+    previous_date = ObjectProperty()
+    title = "MobileInsight"
+
+    index = NumericProperty(1)
     current_title = StringProperty()
-    available_screens = ListProperty([])
-    hierarchy = ListProperty([])
+    screen_names = ListProperty([])
 
     use_kivy_settings = False
 
@@ -274,10 +292,54 @@ class MobileInsightApp(App):
 
         Window.borderless = False
 
-        # self.home_screen = screens.HomeScreen()
-        # self.screens[0] = self.home_screen
+        self.screens = {}
+        self.available_screens = screens.__all__
+        self.screen_names = self.available_screens
+        for i in range(len(self.available_screens)):
+            self.screens[i] = getattr(screens, self.available_screens[i])()
+        self.root.ids.scr_mngr.switch_to(self.screens[0])
 
-        self.go_next_screen()
+    def go_screen(self, idx):
+        self.index = idx
+        self.root.ids.scr_mngr.switch_to(self.load_screen(idx), direction='left')
+
+    def load_screen(self, index):
+        return self.screens[index]
+
+    def get_time_picker_data(self, instance, time):
+        self.root.ids.time_picker_label.text = str(time)
+        self.previous_time = time
+
+    def show_example_time_picker(self):
+        self.time_dialog = MDTimePicker()
+        self.time_dialog.bind(time=self.get_time_picker_data)
+        if self.root.ids.time_picker_use_previous_time.active:
+            try:
+                self.time_dialog.set_time(self.previous_time)
+            except AttributeError:
+                pass
+        self.time_dialog.open()
+
+    def set_previous_date(self, date_obj):
+        self.previous_date = date_obj
+        self.root.ids.date_picker_label.text = str(date_obj)
+
+    def show_example_date_picker(self):
+        if self.root.ids.date_picker_use_previous_date.active:
+            pd = self.previous_date
+            try:
+                MDDatePicker(self.set_previous_date,
+                             pd.year, pd.month, pd.day).open()
+            except AttributeError:
+                MDDatePicker(self.set_previous_date).open()
+        else:
+            MDDatePicker(self.set_previous_date).open()
+
+    def set_error_message(self, *args):
+        if len(self.root.ids.text_field_error.text) == 2:
+            self.root.ids.text_field_error.error = True
+        else:
+            self.root.ids.text_field_error.error = False
 
     def open_log_viewer(self):
         try:
@@ -290,58 +352,6 @@ class MobileInsightApp(App):
             # self.root.ids.log_viewer.disabled = True
             # self.root.ids.stop_plugin.disabled = True
             # self.root.ids.run_plugin.disabled = True
-
-    def on_current_title(self, instance, value):
-        self.root.ids.spnr.text = value
-
-    def go_previous_screen(self):
-        self.index = (self.index - 1) % len(self.available_screens)
-        screen = self.load_screen(self.index)
-        sm = self.root.ids.sm
-        if screen.name != sm.current:
-            sm.switch_to(screen, direction='right')
-            self.current_title = screen.name
-
-    def go_next_screen(self):
-        self.index = (self.index + 1) % len(self.available_screens)
-        screen = self.load_screen(self.index)
-        sm = self.root.ids.sm
-        if screen.name != sm.current:
-            sm.switch_to(screen, direction='left')
-            self.current_title = screen.name
-
-    def go_screen(self, idx):
-        self.index = idx
-        screen = self.load_screen(idx)
-        sm = self.root.ids.sm
-        if screen.name != sm.current:
-            sm.switch_to(self.load_screen(idx), direction='left')
-            self.current_title = screen.name
-
-    def on_current_screen(self, name):
-        self.root.ids.spnr.text = name
-        if name != 'LogViewerScreen':
-            idx = self.available_screens.index(name)
-            if idx > -1:
-                self.hierarchy.append(idx)
-
-    def go_hierarchy_previous(self):
-        ahr = self.hierarchy
-        if len(ahr) == 1:
-            return
-        if ahr:
-            ahr.pop()
-        if ahr:
-            idx = ahr.pop()
-            self.go_screen(idx)
-
-    def load_screen(self, index):
-        if index in self.screens:
-            return self.screens[index]
-        screen = getattr(screens, self.available_screens[index])()
-        self.screens[index] = screen
-        return screen
-
 
     def on_pause(self):
         # Yuanjie: The following code prevents screen freeze when screen off ->

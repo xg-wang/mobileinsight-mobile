@@ -2,7 +2,7 @@
 Screens
 =======
 
-.. versionadded:: 3.2.1
+.. versionadded:: 4.0.0
 
 Contains all available screens for the Mobile-Insight app.
 
@@ -21,15 +21,7 @@ Builder.load_string('''
 <MobileInsightScreenBase>:
     ScrollView:
         do_scroll_x: False
-        do_scroll_y: False if root.fullscreen else (content.height > root.height - dp(16))
-        AnchorLayout:
-            size_hint_y: None
-            height: root.height if root.fullscreen else max(root.height, content.height)
-            GridLayout:
-                id: content
-                cols: 1
-                spacing: '8dp'
-                padding: '8dp'
+        do_scroll_y: False
 ''')
 
 class MobileInsightScreenBase(Screen):
@@ -50,13 +42,20 @@ class MobileInsightScreenBase(Screen):
         '''
         raise NotImplementedError
 
-    def add_widget(self, *args):
-        if 'content' in self.ids:
-            return self.ids.content.add_widget(*args)
-        return super(MobileInsightScreenBase, self).add_widget(*args)
+    def on_enter(self):
+        self.coordinator.start()
+
+    def on_leave(self):
+        # TODO: check kivy version? seems to be added since 1.6
+        self.coordinator.stop()
 
 
-from demo import DemoScreen
-from home import HomeScreen
+from radio import RadioScreen
+from connectivity import ConnectivityScreen
+from dataplane import DataplaneScreen
+from datavoice import DatavoiceScreen
+from mobility import MobilityScreen
+from theming import ThemingScreen
 
-__all__ = ['DemoScreen', 'HomeScreen']
+__all__ = ['RadioScreen', 'ConnectivityScreen', 'DataplaneScreen', 'DatavoiceScreen',\
+            'MobilityScreen', 'ThemingScreen']
