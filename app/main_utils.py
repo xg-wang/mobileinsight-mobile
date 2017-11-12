@@ -419,6 +419,28 @@ def check_security_policy():
     run_shell_cmd(cmd)
 
 
+def check_diag_mode():
+    """Check if diagnostic mode is enabled.
+    Note that this function is chipset-specific: Qualcomm and MTK have different detection approaches
+    """
+    chipset_type = get_chipset_type()
+    if chipset_type == ChipsetType.QUALCOMM:
+        diag_port = "/dev/diag"
+        if not os.path.exists(diag_port):
+            return False
+        else:
+            run_shell_cmd("chmod 777 /dev/diag")
+            return True
+    elif chipset_type == ChipsetType.MTK:
+        cmd = "ps | grep emdlogger1"
+        res = run_shell_cmd(cmd)
+        if not res:
+            return False
+        else:
+            return True
+
+
+
 class OSCConfig:
     # event addr used to send/recv event data
     event_addr = '/event'

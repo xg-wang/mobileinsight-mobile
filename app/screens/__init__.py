@@ -57,5 +57,6 @@ class MobileInsightScreenBase(Screen):
 
 
 from demo import DemoScreen
+from home import HomeScreen
 
-__all__ = ['DemoScreen']
+__all__ = ['DemoScreen', 'HomeScreen']

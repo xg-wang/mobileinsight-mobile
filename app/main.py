@@ -158,6 +158,12 @@ class MobileInsightApp(App):
         self.available_screens = screens.__all__
         self.home_screen = None
         self.log_viewer_screen = None
+        if not main_utils.is_rooted():
+            Logger.error(
+                "MobileInsight requires root privilege. Please root your device for correct functioning.")
+        if not main_utils.check_diag_mode():
+            Logger.error(
+                "The diagnostic mode is disabled. Please check your phone settings.")
         if not create_folder():
             # MobileInsight folders unavailable. Add warnings
             Logger.error("main: SDcard is unavailable. Please check.")

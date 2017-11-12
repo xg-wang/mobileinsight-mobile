@@ -10,6 +10,7 @@ from android.broadcast import BroadcastReceiver
 from collections import deque
 from jnius import autoclass
 from kivy.utils import platform
+from kivy.logger import Logger
 from kivy.core.text import Label as CoreLabel
 from kivy.config import ConfigParser
 from kivy.properties import StringProperty, BooleanProperty
@@ -54,13 +55,14 @@ class HomeScreen(MobileInsightScreenBase):
     def __init__(self, **kw):
         """
         Initialization function. We will do the following task (in order):
-            1. Check if the device is rooted
-            2. Initialize necessary libs required by MobileInsight (e.g., libwireshark)
-            3. Check if Android's security policy allows MobileInsight to access diagnostic mode.
+        __[x] means already done in App__
+            1. [x] Check if the device is rooted
+            2. [x] Initialize necessary libs required by MobileInsight (e.g., libwireshark)
+            3. [x] Check if Android's security policy allows MobileInsight to access diagnostic mode.
             This is mainly caused by SELinux
-            4. Create necessary folders on SDcard (e.g., /sdcard/mobileinsight/, /sdcard/mobileinsight/log/)
+            4. [x] Create necessary folders on SDcard (e.g., /sdcard/mobileinsight/, /sdcard/mobileinsight/log/)
             5. Load built-in and 3rd-party plugins (located in /sdcard/mobileinsight/plugins/)
-            6. Check if the diagnostic mode is enabled
+            6. [x] Check if the diagnostic mode is enabled
             7. Load configurations from the setting panel (configs stored in /sdcard/.mobileinsight.ini)
         """
 
@@ -68,28 +70,28 @@ class HomeScreen(MobileInsightScreenBase):
 
         self.log_viewer = None
 
-        if not main_utils.is_rooted():
-            # self.ids.log_viewer.disabled = False
-            # self.ids.run_plugin.disabled = False
-            self.log_error(
-                "MobileInsight requires root privilege. Please root your device for correct functioning.")
+        # if not main_utils.is_rooted():
+        #     # self.ids.log_viewer.disabled = False
+        #     # self.ids.run_plugin.disabled = False
+        #     self.log_error(
+        #         "MobileInsight requires root privilege. Please root your device for correct functioning.")
 
-        self.__init_libs()
-        self.__check_security_policy()
+        # self.__init_libs()
+        # self.__check_security_policy()
 
-        if not create_folder():
-            # MobileInsight folders unavailable. Add warnings
-            self.log_error("SDcard is unavailable. Please check.")
-            self.ids.log_viewer.disabled = True
-            self.ids.stop_plugin.disabled = True
-            self.ids.run_plugin.disabled = True
+        # if not create_folder():
+        #     # MobileInsight folders unavailable. Add warnings
+        #     self.log_error("SDcard is unavailable. Please check.")
+        #     self.ids.log_viewer.disabled = True
+        #     self.ids.stop_plugin.disabled = True
+        #     self.ids.run_plugin.disabled = True
 
         self.plugins_list = get_plugins_list()
         # self.plugins_list.sort()
 
-        if not self.__check_diag_mode():
-            self.log_error(
-                "The diagnostic mode is disabled. Please check your phone settings.")
+        # if not self.__check_diag_mode():
+        #     self.log_error(
+        #         "The diagnostic mode is disabled. Please check your phone settings.")
 
         # clean up ongoing log collections
         # self.stop_collection()
@@ -140,9 +142,6 @@ class HomeScreen(MobileInsightScreenBase):
         except Exception as e:
             Logger.warning(traceback.format_exc())
 
-    def configure_coordinator(self):
-        pass
-
     def registerBroadcastReceivers(self):
         self.brStopAck = BroadcastReceiver(self.on_broadcastStopServiceAck,
                 actions=['MobileInsight.Plugin.StopServiceAck'])
@@ -182,114 +181,114 @@ class HomeScreen(MobileInsightScreenBase):
     #     else:
     #         self.line_count += 1
 
-    def __check_security_policy(self):
-        """
-        Update SELinux policy.
-        For Nexus 6/6P, the SELinux policy may forbids the log collection.
-        """
+    # def __check_security_policy(self):
+    #     """
+    #     Update SELinux policy.
+    #     For Nexus 6/6P, the SELinux policy may forbids the log collection.
+    #     """
 
-        cmd = "setenforce 0; "
+    #     cmd = "setenforce 0; "
 
-        cmd = cmd + "supolicy --live \"allow init logd dir getattr\";"
+    #     cmd = cmd + "supolicy --live \"allow init logd dir getattr\";"
 
-        # # Depreciated supolicies. Still keep them for backup purpose
-        cmd = cmd + "supolicy --live \"allow init init process execmem\";"
-        cmd = cmd + \
-            "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
-        cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
-        cmd = cmd + \
-            "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+    #     # # Depreciated supolicies. Still keep them for backup purpose
+    #     cmd = cmd + "supolicy --live \"allow init init process execmem\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
+    #     cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
 
-        # # Suspicious supolicies: MI works without them, but it seems that they SHOULD be enabled...
+    #     # # Suspicious supolicies: MI works without them, but it seems that they SHOULD be enabled...
 
-        # # mi2log permission denied (logcat | grep denied), but no impact on log collection/analysis
-        cmd = cmd + \
-            "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
+    #     # # mi2log permission denied (logcat | grep denied), but no impact on log collection/analysis
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
 
-        # # Suspicious: why still works after disabling this command? Won't FIFO fail?
-        cmd = cmd + \
-            "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
+    #     # # Suspicious: why still works after disabling this command? Won't FIFO fail?
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
 
-        # Nexus 6 only
-        cmd = cmd + \
-            "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow rild diag_device chr_file {read write}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
+    #     # Nexus 6 only
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow rild diag_device chr_file {read write}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
 
-        cmd = cmd + \
-            "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
 
-        cmd = cmd + \
-            "supolicy --live \"allow wcnss_service fuse dir {read open search}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow wcnss_service fuse dir {read open search}\";"
 
-        cmd = cmd + \
-            "supolicy --live \"allow wcnss_service mnt_user_file lnk_file {read}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow wcnss_service mnt_user_file lnk_file {read}\";"
 
-        cmd = cmd + \
-            "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
+    #     cmd = cmd + \
+    #         "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
 
-        main_utils.run_shell_cmd(cmd)
+    #     main_utils.run_shell_cmd(cmd)
 
-    def __check_diag_mode(self):
-        """
-        Check if diagnostic mode is enabled.
-        Note that this function is chipset-specific: Qualcomm and MTK have different detection approaches
-"""
-        chipset_type = main_utils.get_chipset_type()
-        if chipset_type == main_utils.ChipsetType.QUALCOMM:
-            diag_port = "/dev/diag"
-            if not os.path.exists(diag_port):
-                return False
-            else:
-                main_utils.run_shell_cmd("chmod 777 /dev/diag")
-                return True
-        elif chipset_type == main_utils.ChipsetType.MTK:
-            cmd = "ps | grep emdlogger1"
-            res = main_utils.run_shell_cmd(cmd)
-            if not res:
-                return False
-            else:
-                return True
+    # def __check_diag_mode(self):
+    #     """
+    #     Check if diagnostic mode is enabled.
+    #     Note that this function is chipset-specific: Qualcomm and MTK have different detection approaches
+    #     """
+    #     chipset_type = main_utils.get_chipset_type()
+    #     if chipset_type == main_utils.ChipsetType.QUALCOMM:
+    #         diag_port = "/dev/diag"
+    #         if not os.path.exists(diag_port):
+    #             return False
+    #         else:
+    #             main_utils.run_shell_cmd("chmod 777 /dev/diag")
+    #             return True
+    #     elif chipset_type == main_utils.ChipsetType.MTK:
+    #         cmd = "ps | grep emdlogger1"
+    #         res = main_utils.run_shell_cmd(cmd)
+    #         if not res:
+    #             return False
+    #         else:
+    #             return True
 
-    def __init_libs(self):
-        """
-        Initialize libs required by MobileInsight.
-        It creates sym links to libs, and chmod of critical execs
-        """
+    # def __init_libs(self):
+    #     """
+    #     Initialize libs required by MobileInsight.
+    #     It creates sym links to libs, and chmod of critical execs
+    #     """
 
-        libs_path = os.path.join(main_utils.get_files_dir(), "data")
-        cmd = ""
+    #     libs_path = os.path.join(main_utils.get_files_dir(), "data")
+    #     cmd = ""
 
-        libs_mapping = {
-            "libwireshark.so": [
-                "libwireshark.so.6", "libwireshark.so.6.0.1"], "libwiretap.so": [
-                "libwiretap.so.5", "libwiretap.so.5.0.1"], "libwsutil.so": [
-                "libwsutil.so.6", "libwsutil.so.6.0.0"]}
-        for lib in libs_mapping:
-            for sym_lib in libs_mapping[lib]:
-                # if not os.path.isfile(os.path.join(libs_path,sym_lib)):
-                if True:
-                    # TODO: chown to restore ownership for the symlinks
-                    cmd = cmd + " ln -s " + \
-                        os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
+    #     libs_mapping = {
+    #         "libwireshark.so": [
+    #             "libwireshark.so.6", "libwireshark.so.6.0.1"], "libwiretap.so": [
+    #             "libwiretap.so.5", "libwiretap.so.5.0.1"], "libwsutil.so": [
+    #             "libwsutil.so.6", "libwsutil.so.6.0.0"]}
+    #     for lib in libs_mapping:
+    #         for sym_lib in libs_mapping[lib]:
+    #             # if not os.path.isfile(os.path.join(libs_path,sym_lib)):
+    #             if True:
+    #                 # TODO: chown to restore ownership for the symlinks
+    #                 cmd = cmd + " ln -s " + \
+    #                     os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
 
-        exes = ["diag_revealer",
-                "diag_revealer_mtk",
-                "android_pie_ws_dissector",
-                "android_ws_dissector"]
-        for exe in exes:
-            cmd = cmd + " chmod 755 " + os.path.join(libs_path, exe) + "; "
+    #     exes = ["diag_revealer",
+    #             "diag_revealer_mtk",
+    #             "android_pie_ws_dissector",
+    #             "android_ws_dissector"]
+    #     for exe in exes:
+    #         cmd = cmd + " chmod 755 " + os.path.join(libs_path, exe) + "; "
 
-        cmd = cmd + "chmod -R 755 " + libs_path
-        main_utils.run_shell_cmd(cmd)
+    #     cmd = cmd + "chmod -R 755 " + libs_path
+    #     main_utils.run_shell_cmd(cmd)
 
     # def __init_libs(self):
     #     """
@@ -393,35 +392,33 @@ class HomeScreen(MobileInsightScreenBase):
                 cmd = "kill "+pid
                 main_utils.run_shell_cmd(cmd)
 
-    """
-    def stop_collection(self):
-        self.collecting = False
+    # def stop_collection(self):
+    #     self.collecting = False
 
-        # Find diag_revealer process
-        # FIXME: No longer work for 7.0: os.listdir() only returns current
-        # processstop_collection
-        diag_procs = []
-        pids = [pid for pid in os.listdir("/proc") if pid.isdigit()]
-        print "stop_collection", str(pids)
-        for pid in pids:
-            try:
-                cmdline = open(
-                    os.path.join(
-                        "/proc",
-                        pid,
-                        "cmdline"),
-                    "rb").read()
-                # if cmdline.startswith("diag_mdlog") or
-                # cmdline.startswith("diag_revealer"):
-                if cmdline.find("diag_revealer") != - \
-                        1 or cmdline.find("diag_mdlog") != -1:
-                    diag_procs.append(int(pid))
-            except IOError:     # proc has been terminated
-                continue
-        if len(diag_procs) > 0:
-            cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
-            main_utils.run_shell_cmd(cmd2)
-    """
+    #     # Find diag_revealer process
+    #     # FIXME: No longer work for 7.0: os.listdir() only returns current
+    #     # processstop_collection
+    #     diag_procs = []
+    #     pids = [pid for pid in os.listdir("/proc") if pid.isdigit()]
+    #     print "stop_collection", str(pids)
+    #     for pid in pids:
+    #         try:
+    #             cmdline = open(
+    #                 os.path.join(
+    #                     "/proc",
+    #                     pid,
+    #                     "cmdline"),
+    #                 "rb").read()
+    #             # if cmdline.startswith("diag_mdlog") or
+    #             # cmdline.startswith("diag_revealer"):
+    #             if cmdline.find("diag_revealer") != - \
+    #                     1 or cmdline.find("diag_mdlog") != -1:
+    #                 diag_procs.append(int(pid))
+    #         except IOError:     # proc has been terminated
+    #             continue
+    #     if len(diag_procs) > 0:
+    #         cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
+    #         main_utils.run_shell_cmd(cmd2)
 
     def popUpMenu(self):
         self.popup.open()
@@ -527,6 +524,10 @@ class HomeScreen(MobileInsightScreenBase):
         # p.wait()
         os.remove(self.__original_filename)
 
+    def on_enter(self):
+        # main_utils.stop_service()
+        pass
+
     def on_leave(self):
         self.stop_service()
 
@@ -545,3 +546,6 @@ class HomeScreen(MobileInsightScreenBase):
         popup_button = Button(text=about_text, background_color=[0,0,0,0], on_press=popup.dismiss)
         popup.content = popup_button
         popup.open()
+
+    def configure_coordinator(self):
+        pass
