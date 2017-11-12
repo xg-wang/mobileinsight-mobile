@@ -14,7 +14,8 @@ import kivy
 from kivy.uix.screenmanager import Screen
 from kivy.properties import BooleanProperty
 from kivy.lang import Builder
-from coordinator import Coordinator
+from kivy.logger import Logger
+from coordinator import COORDINATOR
 
 Builder.load_string('''
 <MobileInsightScreenBase>:
@@ -36,8 +37,10 @@ class MobileInsightScreenBase(Screen):
 
     def __init__(self, **kw):
         super(MobileInsightScreenBase, self).__init__(**kw)
-        self.coordinator = Coordinator()
+        self.coordinator = COORDINATOR
         self.configure_coordinator()
+        Logger.info('screen: screen inited')
+        self.coordinator.start()
 
     def configure_coordinator(self):
         '''
@@ -46,13 +49,6 @@ class MobileInsightScreenBase(Screen):
         2. register callback to analyzers to retrieve data for display
         '''
         raise NotImplementedError
-
-    def on_enter(self):
-        self.coordinator.start()
-
-    def on_leave(self):
-        # TODO: check kivy version? seems to be added since 1.6
-        self.coordinator.stop()
 
     def add_widget(self, *args):
         if 'content' in self.ids:

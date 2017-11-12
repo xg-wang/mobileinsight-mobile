@@ -19,8 +19,6 @@ class DemoScreen(MobileInsightScreenBase):
     current_log = StringProperty('')
 
     def configure_coordinator(self):
-        self.coordinator.monitor = 'OnlineMonitor'
-        # self.coordinator.register_analyzer('WcdmaRrcAnalyzer')
         self.coordinator.register_analyzer('LteNasAnalyzer')
         self.coordinator.register_analyzer('LteRrcAnalyzer')
         self.coordinator.register_callback(self._demo_callback)

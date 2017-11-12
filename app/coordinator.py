@@ -10,9 +10,9 @@ from kivy.logger import Logger
 
 class Coordinator(object):
     def __init__(self):
-        self.monitor = None
         self._analyzers = []
         self._screen_callbacks = []
+        self._service_ready = threading.Event()
 
     def register_analyzer(self, analyzer):
         self._analyzers.append(analyzer)
@@ -28,29 +28,42 @@ class Coordinator(object):
         if platform != 'android':
             Logger.error('Platform is not android, start service fail.')
             return
-        argstr = ';'.join([self.monitor, ','.join(self._analyzers)])
-        osc.sendMsg(OSCConfig.control_addr, dataArray=[argstr,])
-        Logger.info('osc: send control msg ' + argstr)
+        osc.bind(OSCConfig.oscid, self.event_callback, OSCConfig.event_addr)
+        osc.bind(OSCConfig.oscid, self.control_callback, OSCConfig.control_addr)
+        Logger.info('coordinator: coordinator bind to ' + OSCConfig.event_addr)
+        listen_thread = threading.Thread(target=self.listen_osc, args=(OSCConfig.oscid,))
+        listen_thread.start()
+        Logger.info('coordinator: ' + 'listen thread starts')
 
-        osc.bind(OSCConfig.oscid, self.osc_callback, OSCConfig.event_addr)
-        Logger.info('osc: coordinator bind to ' + OSCConfig.event_addr)
-        # listen_thread = threading.Thread(target=self.listen_osc, args=(oscid,))
-        # listen_thread.start()
-        # Logger.info('coordinator: ' + 'listen thread starts')
+        argstr = ','.join(self._analyzers)
+        send_thread = threading.Thread(target=self.send_control, args=(argstr,))
+        send_thread.start()
 
-    # def listen_osc(self, oscid):
-    #     while True:
-    #         osc.readQueue(thread_id=oscid)
-    #         sleep(.5)
+    def listen_osc(self, oscid):
+        while True:
+            osc.readQueue(thread_id=oscid)
+            sleep(.5)
+
+    def event_callback(self, message, *args):
+        Logger.info('coordinator <RECV: event msg: ' + message[2])
+        def G(f): return f(message[2])
+        map(G, self._screen_callbacks)
+
+    def control_callback(self, message, *args):
+        # set the Event lock once service is ready
+        Logger.info('coordinator <RECV: control msg: ' + message[2])
+        self._service_ready.set()
+
+    def send_control(self, message):
+        # wait for service ready event
+        self._service_ready.wait()
+        osc.sendMsg(OSCConfig.control_addr, dataArray=[str(message),], port=OSCConfig.service_port)
+        Logger.info('coordinator SEND>: control msg: ' + message)
 
     def stop(self):
         Logger.info('coordinator: ' + '// stops does nothing right now')
 
-    def osc_callback(self, message, *args):
-        Logger.info('osc <RECV: ' + message[2])
-        def G(f): return f(message[2])
-        map(G, self._screen_callbacks)
-
 # only create a singleton coordinator for app
 # should always import this coordinator
-coordinator = Coordinator()
+COORDINATOR = Coordinator()
+Logger.info('coordinator: created COORDINATOR')

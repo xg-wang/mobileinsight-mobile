@@ -382,6 +382,26 @@ def check_security_policy():
         "supolicy --live \"allow rild diag_device chr_file {read write}\";"
     cmd = cmd + \
         "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow debuggerd app_data_file file {read open getattr}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow zygote zygote process {execmem}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow zygote ashmem_device chr_file {execute}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow zygote zygote_tmpfs file {execute}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow zygote activity_service service_manager {find}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow zygote package_service service_manager {find}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow zygote system_server binder {call}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow zygote system_server binder {transfer}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow system_server zygote binder {call}\";"
+    cmd = cmd + \
+        "supolicy --live \"allow untrusted_app sysfs file {read open getattr}\";"
 
     cmd = cmd + \
         "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
@@ -394,6 +414,7 @@ def check_security_policy():
 
     cmd = cmd + \
         "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
+
 
     run_shell_cmd(cmd)
 
@@ -412,6 +433,8 @@ def setup_osc():
     osc.init()
     OSCConfig.oscid = osc.listen(port=OSCConfig.app_port)
     Clock.schedule_interval(lambda *x: osc.readQueue(thread_id=OSCConfig.oscid), .5)
+    Logger.info('main_utils: setup osc at ' + str(OSCConfig.app_port))
+    Logger.info('main_utils: osc id: ' + OSCConfig.oscid)
 
 def stop_osc():
     osc.dontListen()

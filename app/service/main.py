@@ -11,8 +11,7 @@ import signal
 from kivy.logger import Logger
 from kivy.config import ConfigParser
 from kivy.lib.osc import oscAPI as osc
-from main_utils import OSCConfig
-from service.control import Control
+from service.control import Control, OSCConfig
 from service import mi2app_utils
 from service import GpsListener
 import kivy
@@ -162,25 +161,27 @@ def setup_service():
 
     alive_thread = threading.Thread(target=alive_worker, args=(30.0,))
     alive_thread.start()
-    Logger.info('service: ' + 'alive thread init')
 
     # add this dir to module search path
     app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
     sys.path.append(os.path.join(app_dir, 'service'))
+    Logger.info('service: sys path added: ' + str(sys.path))
 
     # setup control and listen to osc signal
     control = Control()
+    Logger.info('service: control created' + repr(control))
+
     osc.init()
     osc_id = osc.listen(port=OSCConfig.service_port)
     osc.bind(osc_id, control.osc_callback, OSCConfig.control_addr)
-    Logger.info('service: ' + 'control and osc setup')
+    Logger.info('service: osc setup, id: ' + osc_id)
 
-    # use osc control instead
-    # [monitor_name, analyzers_names] = arg.split(';')
-    # analyzers_names = analyzers_names.split(',')
+    osc.sendMsg(OSCConfig.control_addr, dataArray=['service ready',], port=OSCConfig.app_port)
+    Logger.info('service SEND>: service ready msg sent')
 
 
 if __name__ == "__main__":
+    Logger.info('service: start service')
     signal.signal(signal.SIGINT, receive_signal)
 
     arg = os.getenv("PYTHON_SERVICE_ARGUMENT")  # get the argument passed
