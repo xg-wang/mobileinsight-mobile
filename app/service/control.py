@@ -3,6 +3,7 @@ from kivy.lib.osc import oscAPI as osc
 from mobile_insight import monitor, analyzer
 from mi2app_utils import get_cache_dir
 import os
+import threading
 import traceback
 
 
@@ -39,8 +40,16 @@ class Control(object):
         self.monitor.set_log_directory(str(log_directory))
         Logger.info('control: monitor log dir: ' + str(log_directory))
         self.monitor.set_skip_decoding(False)
+        monitor_thread = threading.Thread(target=self.monitor_run)
+        monitor_thread.start()
+        # a = analyzer.LteRrcAnalyzer()
+        # a.set_source(self.monitor)
+        # Logger.info('control: analyzer set source')
+        # self.monitor.run()
+        Logger.info('control: monitor thread starts')
+
+    def monitor_run(self):
         self.monitor.run()
-        Logger.info('control: monitor runs')
 
     def osc_callback(self, msg, *args):
         '''entrance for control

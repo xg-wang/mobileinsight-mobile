@@ -78,6 +78,7 @@ def setup_logger(app_name):
         log_file = os.path.join(
             mi2app_utils.get_mobileinsight_analysis_path(),
             app_name + "_log.txt")
+        Logger.info('service: mi log file: ' + log_file)
 
         fileHandler = logging.FileHandler(log_file, mode='w')
         fileHandler.setFormatter(formatter)
@@ -158,6 +159,7 @@ def alive_worker(secs):
 
 def setup_service():
     Logger.info('service: setup_service')
+    setup_logger('mi')
 
     alive_thread = threading.Thread(target=alive_worker, args=(30.0,))
     alive_thread.start()

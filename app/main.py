@@ -99,7 +99,7 @@ def create_folder():
         cmd = cmd + "chmod -R 755 " + crash_log_path + "; "
 
     # cmd = cmd + "chmod -R 755 "+mobileinsight_path+"; "
-
+    Logger.info('main: create folder cmd: ' + cmd)
     main_utils.run_shell_cmd(cmd)
     return True
 
@@ -158,6 +158,9 @@ class MobileInsightApp(App):
         self.available_screens = screens.__all__
         self.home_screen = None
         self.log_viewer_screen = None
+        if not create_folder():
+            # MobileInsight folders unavailable. Add warnings
+            Logger.error("main: SDcard is unavailable. Please check.")
         main_utils.init_libs()
         main_utils.check_security_policy()
         main_utils.setup_osc()
