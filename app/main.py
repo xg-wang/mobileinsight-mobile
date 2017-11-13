@@ -14,18 +14,6 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import platform
 
-from kivymd.button import MDIconButton
-from kivymd.date_picker import MDDatePicker
-from kivymd.dialog import MDDialog
-from kivymd.label import MDLabel
-from kivymd.list import ILeftBody, ILeftBodyTouch, IRightBodyTouch, BaseListItem
-from kivymd.material_resources import DEVICE_TYPE
-from kivymd.navigationdrawer import MDNavigationDrawer, NavigationDrawerHeaderBase
-from kivymd.selectioncontrols import MDCheckbox
-from kivymd.snackbar import Snackbar
-from kivymd.theming import ThemeManager
-from kivymd.time_picker import MDTimePicker
-
 import main_utils
 from main_utils import current_activity
 import screens
@@ -44,6 +32,19 @@ import sys
 import threading
 import time
 import traceback
+
+sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/kivymd')
+from kivymd.button import MDIconButton
+from kivymd.date_picker import MDDatePicker
+from kivymd.dialog import MDDialog
+from kivymd.label import MDLabel
+from kivymd.list import ILeftBody, ILeftBodyTouch, IRightBodyTouch, BaseListItem
+from kivymd.material_resources import DEVICE_TYPE
+from kivymd.navigationdrawer import MDNavigationDrawer, NavigationDrawerHeaderBase
+from kivymd.selectioncontrols import MDCheckbox
+from kivymd.snackbar import Snackbar
+from kivymd.theming import ThemeManager
+from kivymd.time_picker import MDTimePicker
 
 # not working
 # SERVICE_DIR = os.path.join(os.getcwd(), 'service')
