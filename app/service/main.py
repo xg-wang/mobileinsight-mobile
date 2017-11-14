@@ -161,9 +161,6 @@ def setup_service():
     Logger.info('service: setup_service')
     setup_logger('mi')
 
-    alive_thread = threading.Thread(target=alive_worker, args=(30.0,))
-    alive_thread.start()
-
     # add this dir to module search path
     app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
     sys.path.append(os.path.join(app_dir, 'service'))
@@ -174,13 +171,19 @@ def setup_service():
     Logger.info('service: control created' + repr(control))
 
     osc.init()
-    osc_id = osc.listen(port=OSCConfig.service_port)
-    osc.bind(osc_id, control.osc_callback, OSCConfig.control_addr)
-    Logger.info('service: osc setup, id: ' + osc_id)
+    OSCID = osc.listen(port=OSCConfig.service_port)
+    # def dummy_callback(msg, *args):
+    #     Logger.info('service: dummy callback: ' + str(msg))
+    # osc.bind(OSCID, dummy_callback, OSCConfig.control_addr)
+    osc.bind(OSCID, control.osc_callback, OSCConfig.control_addr)
+    Logger.info('service: osc setup, id: ' + OSCID)
 
     osc.sendMsg(OSCConfig.control_addr, dataArray=['service ready',], port=OSCConfig.app_port)
     Logger.info('service SEND>: service ready msg sent')
-
+    while True:
+        Logger.info('read queue')
+        osc.readQueue(thread_id=OSCID)
+        time.sleep(.5)
 
 if __name__ == "__main__":
     Logger.info('service: start service')

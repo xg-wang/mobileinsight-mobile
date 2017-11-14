@@ -64,14 +64,18 @@ class Control(object):
         value = msg[2]
         if (value == 'STOP'):
             # TODO: does monitor supports stop?
+            Logger.info('control: to STOP')
             self.monitor.stop()
         elif (value == 'START'):
+            Logger.info('control: to START')
             self.monitor.run()
         else:
             analyzer_names = [s for s in value.split(',') if s != '']
+            Logger.info('control: ' + str(analyzer_names))
             self.set_analyzers(analyzer_names)
 
     def set_analyzers(self, names):
+
         # make sure there is monitor running
         if (self.monitor is None):
             raise Exception('Monitor not yet set.')

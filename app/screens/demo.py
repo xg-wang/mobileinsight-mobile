@@ -26,6 +26,5 @@ class DemoScreen(MobileInsightScreenBase):
     def _demo_callback(self, event):
         Logger.info('DemoScreen: ' + str(event))
         string = str(event)
-        if (len(string) < 40):
-            Logger.info('DemoScreen: ' + 'show event')
-            self.current_log = string
+        Logger.info('DemoScreen: ' + 'show event')
+        self.current_log = string
