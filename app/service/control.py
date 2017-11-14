@@ -40,8 +40,8 @@ class Control(object):
         self.monitor.set_log_directory(str(log_directory))
         Logger.info('control: monitor log dir: ' + str(log_directory))
         self.monitor.set_skip_decoding(False)
-        monitor_thread = threading.Thread(target=self.monitor_run)
-        monitor_thread.start()
+        # monitor_thread = threading.Thread(target=self.monitor_run)
+        # monitor_thread.start()
         # a = analyzer.LteRrcAnalyzer()
         # a.set_source(self.monitor)
         # Logger.info('control: analyzer set source')
@@ -98,3 +98,5 @@ class Control(object):
             Logger.error(traceback.format_exc())
 
         Logger.info('control: set analyzers: ' + str(self.analyzers))
+        self.monitor.run()
+

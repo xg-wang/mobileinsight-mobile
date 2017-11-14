@@ -89,10 +89,9 @@ def setup_logger(app_name):
 def on_gps(provider, eventname, *args):
     if eventname == 'provider-disabled':
         pass
-
     elif eventname == 'location':
         location = args[0]
-        Logger.info('on_gps: lat {}, lon {}'.format(location.getLatitude(), location.getLongitude()))
+        Logger.info('gps: ' + str(location.getLatitude()) + str(location.getLongitude()))
 
 
 def exec_legacy(arg):
@@ -178,10 +177,12 @@ def setup_service():
     osc.bind(OSCID, control.osc_callback, OSCConfig.control_addr)
     Logger.info('service: osc setup, id: ' + OSCID)
 
+    gps_provider = GpsListener(on_gps)
+    gps_provider.start()
+
     osc.sendMsg(OSCConfig.control_addr, dataArray=['service ready',], port=OSCConfig.app_port)
     Logger.info('service SEND>: service ready msg sent')
     while True:
-        Logger.info('read queue')
         osc.readQueue(thread_id=OSCID)
         time.sleep(.5)
 
