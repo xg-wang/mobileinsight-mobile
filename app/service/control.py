@@ -24,7 +24,7 @@ def coord_callback(event, *args):
 
 
 class Control(object):
-    ''' Controls for Mobile Insight service
+    '''Service side control center
     This module manages the monitor, analyzers for mobile-insight app.
     Callbacks receive osc control signal to perform the actions.
     '''
@@ -98,5 +98,4 @@ class Control(object):
             Logger.error(traceback.format_exc())
 
         Logger.info('control: set analyzers: ' + str(self.analyzers))
-        self.monitor.run()
 

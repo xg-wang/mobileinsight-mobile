@@ -17,7 +17,7 @@ from kivy.utils import platform
 import main_utils
 from main_utils import current_activity
 import screens
-from screens.logviewer import LogViewerScreen
+from coordinator import COORDINATOR
 import datetime
 import functools
 import jnius
@@ -298,6 +298,7 @@ class MobileInsightApp(App):
         self.screen_names = self.available_screens
         for i in range(len(self.available_screens)):
             self.screens[i] = getattr(screens, self.available_screens[i])()
+        COORDINATOR.send_control('START')
         self.root.ids.scr_mngr.switch_to(self.screens[0])
 
     def go_screen(self, idx):
@@ -341,18 +342,6 @@ class MobileInsightApp(App):
             self.root.ids.text_field_error.error = True
         else:
             self.root.ids.text_field_error.error = False
-
-    def open_log_viewer(self):
-        try:
-            if self.log_viewer_screen is None:
-                self.log_viewer_screen = LogViewerScreen()
-            self.root.ids.sm.switch_to(self.log_viewer_screen)
-            self.log_viewer_screen.onOpen()
-        except Exception as e:
-            Logger.exception(traceback.format_exc())
-            # self.root.ids.log_viewer.disabled = True
-            # self.root.ids.stop_plugin.disabled = True
-            # self.root.ids.run_plugin.disabled = True
 
     def on_pause(self):
         # Yuanjie: The following code prevents screen freeze when screen off ->

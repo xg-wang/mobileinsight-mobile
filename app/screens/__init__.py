@@ -31,8 +31,13 @@ class MobileInsightScreenBase(Screen):
         super(MobileInsightScreenBase, self).__init__(**kw)
         self.coordinator = COORDINATOR
         self.configure_coordinator()
-        Logger.info('screen: screen inited')
-        self.coordinator.start()
+        Logger.info('screen: screen inited: ' + repr(self))
+        ''' TODO:
+        currently monitor doesn't support runtime adding analyzers
+        after upstream monitor supports this, we can
+        start sending control message per screen
+        '''
+        # self.coordinator.start()
 
     def configure_coordinator(self):
         '''
@@ -40,14 +45,9 @@ class MobileInsightScreenBase(Screen):
         1. specify monitor, analyzers name to the monitor
         2. register callback to analyzers to retrieve data for display
         '''
-        raise NotImplementedError
-
-    def on_enter(self):
-        self.coordinator.start()
-
-    def on_leave(self):
-        # TODO: check kivy version? seems to be added since 1.6
-        self.coordinator.stop()
+        # TODO: uncomment this when done all screens
+        # raise NotImplementedError
+        pass
 
 
 from radio import RadioScreen
@@ -56,6 +56,8 @@ from dataplane import DataplaneScreen
 from datavoice import DatavoiceScreen
 from mobility import MobilityScreen
 from theming import ThemingScreen
+from home import HomeScreen
 
-__all__ = ['RadioScreen', 'ConnectivityScreen', 'DataplaneScreen', 'DatavoiceScreen',\
-            'MobilityScreen', 'ThemingScreen']
+__all__ = [
+    'RadioScreen', 'ConnectivityScreen', 'DataplaneScreen',
+    'DatavoiceScreen', 'MobilityScreen', 'ThemingScreen', 'HomeScreen']

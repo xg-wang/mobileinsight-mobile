@@ -25,6 +25,7 @@ from kivy.lib.osc import oscAPI as osc
 from kivy.clock import Clock
 from kivy.logger import Logger
 
+
 current_activity = cast("android.app.Activity", autoclass(
     "org.kivy.android.PythonActivity").mActivity)
 ANDROID_SHELL = "/system/bin/sh"

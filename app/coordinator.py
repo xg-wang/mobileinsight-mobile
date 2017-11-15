@@ -9,6 +9,9 @@ from kivy.logger import Logger
 
 
 class Coordinator(object):
+    '''App side control center
+    see control for detailed protocol
+    '''
     def __init__(self):
         self._analyzers = []
         self._screen_callbacks = []
@@ -35,9 +38,10 @@ class Coordinator(object):
         listen_thread.start()
         Logger.info('coordinator: ' + 'listen thread starts')
 
+        # TODO: analyzers msg should be separated from osc init
         argstr = ','.join(self._analyzers)
-        send_thread = threading.Thread(target=self.send_control, args=(argstr,))
-        send_thread.start()
+        self.send_control(argstr)
+
 
     def listen_osc(self, oscid):
         while True:
@@ -55,10 +59,13 @@ class Coordinator(object):
         self._service_ready.set()
 
     def send_control(self, message):
-        # wait for service ready event
-        self._service_ready.wait()
-        osc.sendMsg(OSCConfig.control_addr, dataArray=[str(message),], port=OSCConfig.service_port)
-        Logger.info('coordinator SEND>: control msg: ' + message)
+        def thread_target(msg):
+            # wait for service ready event
+            self._service_ready.wait()
+            osc.sendMsg(OSCConfig.control_addr, dataArray=[str(msg),], port=OSCConfig.service_port)
+            Logger.info('coordinator SEND>: control msg: ' + msg)
+        send_thread = threading.Thread(target=thread_target, args=(message,))
+        send_thread.start()
 
     def stop(self):
         Logger.info('coordinator: ' + '// stops does nothing right now')
