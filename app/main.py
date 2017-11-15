@@ -188,8 +188,7 @@ class MobileInsightApp(App):
             Logger.error("main: SDcard is unavailable. Please check.")
         main_utils.init_libs()
         main_utils.check_security_policy()
-        main_utils.setup_osc()
-        main_utils.setup_service()
+        COORDINATOR.start()
 
     def build_settings(self, settings):
 
@@ -298,6 +297,7 @@ class MobileInsightApp(App):
         self.screen_names = self.available_screens
         for i in range(len(self.available_screens)):
             self.screens[i] = getattr(screens, self.available_screens[i])()
+        COORDINATOR.setup_analyzers()
         COORDINATOR.send_control('START')
         self.root.ids.scr_mngr.switch_to(self.screens[0])
 

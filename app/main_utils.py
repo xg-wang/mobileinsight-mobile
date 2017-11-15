@@ -22,7 +22,6 @@ import shutil
 import stat
 import json
 from kivy.lib.osc import oscAPI as osc
-from kivy.clock import Clock
 from kivy.logger import Logger
 
 
@@ -439,35 +438,3 @@ def check_diag_mode():
             return False
         else:
             return True
-
-
-
-class OSCConfig:
-    # event addr used to send/recv event data
-    event_addr = '/event'
-    # control addr used to control monitor/analyzer lifecycle
-    control_addr = '/control'
-    service_port = 3000
-    app_port = 3001
-    # app side oscid
-    oscid = None
-
-def setup_osc():
-    osc.init()
-    OSCConfig.oscid = osc.listen(port=OSCConfig.app_port)
-    Clock.schedule_interval(lambda *x: osc.readQueue(thread_id=OSCConfig.oscid), .5)
-    Logger.info('main_utils: setup osc at ' + str(OSCConfig.app_port))
-    Logger.info('main_utils: osc id: ' + OSCConfig.oscid)
-
-def stop_osc():
-    osc.dontListen()
-
-def setup_service():
-    android.start_service(title='MobileInsightService',
-                          description='Mobile Insight Low level service',
-                          arg='')
-    Logger.info('main_utils: start background service')
-
-def stop_service():
-    android.stop_service()
-    Logger.info('main_utils: stop background service')

@@ -3,9 +3,41 @@ import threading
 from time import sleep
 from kivy.lib.osc import oscAPI as osc
 from kivy.utils import platform
-from main_utils import OSCConfig
 import traceback
+from kivy.clock import Clock
 from kivy.logger import Logger
+
+
+
+class OSCConfig:
+    # event addr used to send/recv event data
+    event_addr = '/event'
+    # control addr used to control monitor/analyzer lifecycle
+    control_addr = '/control'
+    service_port = 3000
+    app_port = 3001
+    # app side oscid
+    oscid = None
+
+def setup_osc():
+    osc.init()
+    OSCConfig.oscid = osc.listen(port=OSCConfig.app_port)
+    Clock.schedule_interval(lambda *x: osc.readQueue(thread_id=OSCConfig.oscid), .5)
+    Logger.info('coordinator: setup osc at ' + str(OSCConfig.app_port))
+    Logger.info('coordinator: osc id: ' + OSCConfig.oscid)
+
+def stop_osc():
+    osc.dontListen()
+
+def setup_service():
+    android.start_service(title='MobileInsightService',
+                          description='Mobile Insight Low level service',
+                          arg='')
+    Logger.info('coordinator: start background service')
+
+def stop_service():
+    android.stop_service()
+    Logger.info('coordinator: stop background service')
 
 
 class Coordinator(object):
@@ -28,20 +60,19 @@ class Coordinator(object):
         Start service to setup monitor, analyzers,
         use osc to listen for data update
         '''
-        if platform != 'android':
-            Logger.error('Platform is not android, start service fail.')
-            return
+        setup_osc()
+        setup_service()
         osc.bind(OSCConfig.oscid, self.event_callback, OSCConfig.event_addr)
-        osc.bind(OSCConfig.oscid, self.control_callback, OSCConfig.control_addr)
         Logger.info('coordinator: coordinator bind to ' + OSCConfig.event_addr)
+        osc.bind(OSCConfig.oscid, self.control_callback, OSCConfig.control_addr)
+        Logger.info('coordinator: coordinator bind to ' + OSCConfig.control_addr)
         listen_thread = threading.Thread(target=self.listen_osc, args=(OSCConfig.oscid,))
         listen_thread.start()
         Logger.info('coordinator: ' + 'listen thread starts')
 
-        # TODO: analyzers msg should be separated from osc init
+    def setup_analyzers(self):
         argstr = ','.join(self._analyzers)
         self.send_control(argstr)
-
 
     def listen_osc(self, oscid):
         while True:

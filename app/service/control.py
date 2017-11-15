@@ -40,16 +40,17 @@ class Control(object):
         self.monitor.set_log_directory(str(log_directory))
         Logger.info('control: monitor log dir: ' + str(log_directory))
         self.monitor.set_skip_decoding(False)
+        self._analyzers_ready = threading.Event()
         # monitor_thread = threading.Thread(target=self.monitor_run)
         # monitor_thread.start()
+        # Logger.info('control: monitor thread starts')
         # a = analyzer.LteRrcAnalyzer()
         # a.set_source(self.monitor)
         # Logger.info('control: analyzer set source')
         # self.monitor.run()
-        Logger.info('control: monitor thread starts')
 
-    def monitor_run(self):
-        self.monitor.run()
+    # def monitor_run(self):
+    #     self.monitor.run()
 
     def osc_callback(self, msg, *args):
         '''entrance for control
@@ -68,6 +69,7 @@ class Control(object):
             self.monitor.stop()
         elif (value == 'START'):
             Logger.info('control: to START')
+            self._analyzers_ready.wait()
             self.monitor.run()
         else:
             analyzer_names = [s for s in value.split(',') if s != '']
@@ -96,6 +98,6 @@ class Control(object):
         except AttributeError as error:
             Logger.error('service: Analyzer class not found ' + error)
             Logger.error(traceback.format_exc())
-
+        self._analyzers_ready.set()
         Logger.info('control: set analyzers: ' + str(self.analyzers))
 
