@@ -1,6 +1,7 @@
 from . import MobileInsightScreenBase
 from kivy.lang import Builder
 from kivy.properties import NumericProperty, StringProperty
+from kivy.logger import Logger
 
 
 Builder.load_file('screens/radio.kv')
@@ -17,5 +18,4 @@ class RadioScreen(MobileInsightScreenBase):
     def _demo_callback(self, event):
         Logger.info('DemoScreen: ' + str(event))
         string = str(event)
-        Logger.info('DemoScreen: ' + 'show event')
-        self.current_log = string
+        self.current_log = string[:20]
