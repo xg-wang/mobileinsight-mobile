@@ -336,7 +336,9 @@ class LogViewerScreen(MobileInsightScreenBase):
 # Go back to Home Screen
 
     def onGoBack(self, app):
-        app.root.ids.sm.switch_to(app.home_screen)
+        idx = app.available_screens.index('HomeScreen')
+        app.go_screen(idx)
+        # app.root.ids.sm.switch_to(app.home_screen)
 
 
 # Filter

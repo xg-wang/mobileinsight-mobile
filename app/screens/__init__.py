@@ -57,7 +57,10 @@ from datavoice import DatavoiceScreen
 from mobility import MobilityScreen
 from theming import ThemingScreen
 from home import HomeScreen
+from logviewer import LogViewerScreen
+from about import AboutScreen
 
 __all__ = [
     'RadioScreen', 'ConnectivityScreen', 'DataplaneScreen',
-    'DatavoiceScreen', 'MobilityScreen', 'ThemingScreen', 'HomeScreen']
+    'DatavoiceScreen', 'MobilityScreen', 'ThemingScreen',
+    'HomeScreen', 'LogViewerScreen', 'AboutScreen']

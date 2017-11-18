@@ -304,6 +304,8 @@ class MobileInsightApp(App):
     def go_screen(self, idx):
         self.index = idx
         self.root.ids.scr_mngr.switch_to(self.load_screen(idx), direction='left')
+        if idx == 7:
+            self.screens[7].onOpen()
 
     def load_screen(self, index):
         return self.screens[index]

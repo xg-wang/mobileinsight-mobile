@@ -65,10 +65,30 @@ NavigationLayout:
             on_release:app.go_screen(4); app.root.ids.toolbar.title = self.text
 
         NavigationDrawerIconButton:
-            icon: 'settings'
+            icon: 'diamond'
             text: "Change Themes"
             #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
             on_release:app.go_screen(5); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'home'
+            text: "Home Page"
+            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
+            on_release:app.go_screen(6); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'folder'
+            text: "Log Viewer"
+            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
+            on_release:app.go_screen(7); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'settings'
+            text: "Settings"
+            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
+            on_release: app.open_settings()
+        NavigationDrawerIconButton:
+            icon: 'information'
+            text: "About MobileInsight"
+            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
+            on_release: app.go_screen(8);
 
     BoxLayout:
         orientation: 'vertical'
