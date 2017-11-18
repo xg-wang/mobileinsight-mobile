@@ -88,7 +88,7 @@ NavigationLayout:
             icon: 'information'
             text: "About MobileInsight"
             #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
-            on_release: app.go_screen(8);
+            on_release: app.go_screen(8); app.root.ids.toolbar.title = self.text
 
     BoxLayout:
         orientation: 'vertical'
