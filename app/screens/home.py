@@ -123,7 +123,7 @@ class HomeScreen(MobileInsightScreenBase):
 
             if bootup:
                 self.selectedPlugin = name
-                self.ids.selectButton.text = "Select Plugin"
+                # self.ids.selectButton.text = "Select Plugin"
                 self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
                 bootup = False
 
@@ -147,11 +147,17 @@ class HomeScreen(MobileInsightScreenBase):
                 actions=['MobileInsight.Plugin.StopServiceAck'])
         self.brStopAck.start()
 
+    def set_plugin(self, plugin_name):
+        print "set_plugin"
+        self.selectedPlugin = plugin_name
+        if not self.service:
+            self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
+
     #Setting the text for the Select Plugin Menu button
     def callback(self, obj):
         self.selectedPlugin = obj.id
         # self.ids.selectButton.text = "Select Button: " + obj.text[(obj.text.find("]", obj.text.find("]")+1)+1):obj.text.find("[", obj.text.find("[", obj.text.find("[")+1)+1)]
-        self.ids.selectButton.text = "Select Plugin"
+        # self.ids.selectButton.text = "Select Plugin"
         if not self.service:
             self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
         self.popup.dismiss()
@@ -464,7 +470,7 @@ class HomeScreen(MobileInsightScreenBase):
     def stop_service(self):
         # Register listener for 'MobileInsight.Plugin.StopServiceAck' intent
         # from plugin
-        self.log_info("Ready to stop current plugin ...")
+        # self.log_info("Ready to stop current plugin ...")
         self.pluginAck = False
 
         # Using broadcast to send 'MobileInsight.Main.StopService' intent to
@@ -530,22 +536,6 @@ class HomeScreen(MobileInsightScreenBase):
 
     def on_leave(self):
         self.stop_service()
-
-    def about(self):
-        about_text = ('MobileInsight ' + main_utils.get_cur_version() + ' \n'
-                      + 'MobileInsight Team\n\n'
-                      + 'Developers:\n'
-                      + '    Yuanjie Li,\n'
-                      + '    Zengwen Yuan,\n'
-                      + '    Jiayao Li,\n'
-                      + '    Haotian Deng,\n'
-                      + '    Qianru Li,\n'
-                      + '    Zhehui Zhang\n\n'
-                      + 'Copyright (c) 2014 – 2017')
-        popup = Popup(title='About MobileInsight', size_hint=(1,1), background="gradient.png")
-        popup_button = Button(text=about_text, background_color=[0,0,0,0], on_press=popup.dismiss)
-        popup.content = popup_button
-        popup.open()
 
     def configure_coordinator(self):
         pass

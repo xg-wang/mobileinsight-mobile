@@ -1,4 +1,4 @@
-<ScrollableLabel@ScrollView>:
+<ScrollableLabel2@ScrollView>:
     text: ""
     scroll_y: 0
 
@@ -15,25 +15,24 @@
         markup: True
 
 # Main screen
-<HomeScreen@MobileInsightScreenBase>:
-    name: "HomeScreen"
-    id: mainscreen
-    sColor: [0/255.0, 161/255.0, 247/255.0, 1] # rgb colors must be percentages
+<PluginsScreen@MobileInsightScreenBase>:
+    name: "PluginsScreen"
+    id: pluginscreen
+    sColor: [30/255.0, 100/255.0, 180/255.0, .85] # rgb colors must be percentages
     eColor: [.54, .87, .92, .85]
     GridLayout:
         cols: 1
         spacing: 5
-        ScrollableLabel:
+        ScrollableLabel2:
             text: "%s" % root.error_log
             size_hint_y: 6
-
         Button:
-            id: run_plugin
             size_hint_y: 2.5
-            text: "Run Plugin"
-            font_size: "24sp"
-            on_release: root.on_click_plugin(root.selectedPlugin)
+            id: selectButton
+            on_release: root.popUpMenu();
             background_normal: ""
-            background_color: mainscreen.sColor
+            background_color: pluginscreen.sColor
+            font_size: "24sp"
+            shorten_from: "right"
             color: 1,1,1,1
         

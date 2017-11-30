@@ -38,63 +38,66 @@ NavigationLayout:
         NavigationDrawerToolbar:
             title: "MobileInsight"
 
-        NavigationDrawerIconButton:
-            icon: 'radio-tower'
-            text: "Radio"
-            #on_release: app.root.ids.scr_mngr.current = 'radio'; app.root.ids.toolbar.title = self.text
-            on_release:app.go_screen(0); app.root.ids.toolbar.title = self.text
-        NavigationDrawerIconButton:
-            icon: 'database'
-            text: "Data-plane Statistics"
-            #on_release: app.root.ids.scr_mngr.current = 'dataplane'; app.root.ids.toolbar.title = self.text
-            on_release:app.go_screen(1); app.root.ids.toolbar.title = self.text
-        NavigationDrawerIconButton:
-            icon: 'lan-connect'
-            text: "Connectivity Information"
-            #on_release: app.root.ids.scr_mngr.current = 'connectivity'; app.root.ids.toolbar.title = self.text
-            on_release:app.go_screen(2); app.root.ids.toolbar.title = self.text
-        NavigationDrawerIconButton:
-            icon: 'phone'
-            text: "Mobility Information"
-            #on_release: app.root.ids.scr_mngr.current = 'mobility'; app.root.ids.toolbar.title = self.text
-            on_release:app.go_screen(3); app.root.ids.toolbar.title = self.text
-        NavigationDrawerIconButton:
-            icon: 'voice'
-            text: "Data/Voice Service"
-            #on_release: app.root.ids.scr_mngr.current = 'datavoice'; app.root.ids.toolbar.title = self.text
-            on_release:app.go_screen(4); app.root.ids.toolbar.title = self.text
-
-        NavigationDrawerIconButton:
-            icon: 'diamond'
-            text: "Change Themes"
-            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
-            on_release:app.go_screen(5); app.root.ids.toolbar.title = self.text
+        
         NavigationDrawerIconButton:
             icon: 'home'
-            text: "Home Page"
-            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
-            on_release:app.go_screen(6); app.root.ids.toolbar.title = self.text
+            text: "Home"
+            on_release:app.go_screen(0); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'widgets'
+            text: "Plugins"
+            on_release: app.screens[1].manager=app.root.ids.scr_mngr;app.screens[1].popUpMenu(); 
         NavigationDrawerIconButton:
             icon: 'folder'
-            text: "Log Viewer"
-            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
-            on_release:app.go_screen(7); app.root.ids.toolbar.title = self.text
+            text: "Log Browser"
+            on_release:app.go_screen(2); app.screens[2].onOpen(); app.root.ids.toolbar.title = self.text
         NavigationDrawerIconButton:
             icon: 'settings'
             text: "Settings"
-            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
             on_release: app.open_settings()
         NavigationDrawerIconButton:
+            icon: 'help'
+            text: "Help"
+            on_release: app.go_screen(3); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
             icon: 'information'
-            text: "About MobileInsight"
-            #on_release: app.root.ids.scr_mngr.current = 'theming'; app.root.ids.toolbar.title = self.text
-            on_release: app.go_screen(8); app.root.ids.toolbar.title = self.text
+            text: "About"
+            on_release: app.go_screen(4); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'account'
+            text: "Privacy notice"
+            on_release: app.go_screen(5); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'radio-tower'
+        #    text: "Radio"
+        #    on_release:app.go_screen(4); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'database'
+        #    text: "Data-plane Statistics"
+        #    on_release:app.go_screen(5); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'lan-connect'
+        #    text: "Connectivity Information"
+        #    on_release:app.go_screen(6); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'phone'
+        #    text: "Mobility Information"
+        #    on_release:app.go_screen(7); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'voice'
+        #    text: "Data/Voice Service"
+        #    on_release:app.go_screen(8); app.root.ids.toolbar.title = self.text
+
+        #NavigationDrawerIconButton:
+        #    icon: 'diamond'
+        #    text: "Change Themes"
+        #    on_release:app.go_screen(9); app.root.ids.toolbar.title = self.text
 
     BoxLayout:
         orientation: 'vertical'
         Toolbar:
             id: toolbar
-            title: 'Radio'
+            title: 'MobileInsight'
             md_bg_color: app.theme_cls.primary_color
             background_palette: 'Primary'
             background_hue: '500'

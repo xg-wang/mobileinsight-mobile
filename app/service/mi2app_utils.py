@@ -9,10 +9,9 @@ Define utility variables and functions for apps.
 import subprocess as sp
 import os
 import re
-import traceback
 import jnius
-from jnius import autoclass
-from kivy.logger import Logger
+import hashlib
+from jnius import autoclass, cast, PythonJavaClass, java_method
 
 ANDROID_SHELL = "/system/bin/sh"
 
@@ -20,22 +19,19 @@ ANDROID_SHELL = "/system/bin/sh"
 #PythonService = autoclass('org.renpy.android.PythonService')
 
 # This one works with SDL2
+PythonActivity = autoclass('org.kivy.android.PythonActivity')
 PythonService  = autoclass('org.kivy.android.PythonService')
 
+pyService = PythonService.mService
 androidOsBuild = autoclass("android.os.Build")
 Context = autoclass('android.content.Context')
 File = autoclass("java.io.File")
 FileOutputStream = autoclass('java.io.FileOutputStream')
 ConnManager = autoclass('android.net.ConnectivityManager')
 
-try:
-    pyService = PythonService.mService
-    mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
-    telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
-    locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
-except AttributeError as e:
-    Logger.exception(PythonService)
-    Logger.exception(traceback.format_exc())
+mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
+telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
+locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
 
 def run_shell_cmd(cmd, wait=False):
     p = sp.Popen(
@@ -76,11 +72,11 @@ def get_phone_info():
     cmd = "getprop ro.product.model; getprop ro.product.manufacturer;"
     res = run_shell_cmd(cmd)
     if not res:
-        return get_device_id() + '_null-null'
+        return get_device_sn() + '_null-null'
     res = res.split('\n')
     model = res[0].replace(" ", "")
     manufacturer = res[1].replace(" ", "")
-    phone_info = get_device_id() + '_' + manufacturer + '-' + model
+    phone_info = get_device_sn() + '_' + manufacturer + '-' + model
     return phone_info
 
 
@@ -95,7 +91,17 @@ def get_device_id():
     tup = re.findall("\'.+\'", out)
     tupnum = re.findall("\d+", "".join(tup))
     deviceId = "".join(tupnum)
-    return deviceId
+    return hashlib.md5(deviceId).hexdigest()
+
+
+def get_device_sn():
+    cmd = "getprop ro.serialno"
+    out = run_shell_cmd(cmd)
+    if out != "":
+        deviceSn = hashlib.md5(out).hexdigest()
+    else:
+        deviceSn = hashlib.md5("FFFFFFFF").hexdigest()
+    return deviceSn
 
 
 def get_sdcard_path():

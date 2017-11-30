@@ -6,6 +6,7 @@ from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
+from kivymd.theming import ThemeManager
 
 import httplib
 import urllib
@@ -31,9 +32,13 @@ Builder.load_string('''
         Button:
             text: 'Yes'
             on_release: root.dispatch('on_answer','yes')
+            background_color: 0.1,0.65,0.88,1
+            color: 1,1,1,1
         Button:
             text: 'No'
             on_release: root.dispatch('on_answer', 'no')
+            background_color: 0.1,0.65,0.88,1
+            color: 1,1,1,1
 ''')
 
 
@@ -49,6 +54,8 @@ class ConfirmPopup(GridLayout):
 
 
 class CrashApp(App):
+    theme_cls = ThemeManager()
+
     def build(self):
         content = ConfirmPopup(text='Would you like to report this bug to us?')
         content.bind(on_answer=self._on_answer)
@@ -136,7 +143,9 @@ class CrashApp(App):
             main_utils.run_shell_cmd(
                 'logcat -d | grep -E "python|diag" >' + log_name, True)
             self.__upload_crash_log(log_name)
-
-        self.popup.dismiss()
-
-        sys.exit(1)
+            self.popup.dismiss()
+            sys.exit(1)
+        elif answer == "no":
+            App.get_running_app().stop()
+            self.popup.dismiss()
+            sys.exit(1)
