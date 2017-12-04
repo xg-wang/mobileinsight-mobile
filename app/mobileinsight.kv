@@ -30,6 +30,7 @@
 #:import MDBottomNavigation kivymd.tabs.MDBottomNavigation
 #:import MDBottomNavigationItem kivymd.tabs.MDBottomNavigationItem
 #:import Toolbar kivymd.toolbar.Toolbar
+#:import MapSource mapview.MapSource
 
 NavigationLayout:
     id: nav_layout
@@ -67,31 +68,31 @@ NavigationLayout:
             icon: 'account'
             text: "Privacy notice"
             on_release: app.go_screen(5); app.root.ids.toolbar.title = self.text
-        #NavigationDrawerIconButton:
-        #    icon: 'radio-tower'
-        #    text: "Radio"
-        #    on_release:app.go_screen(4); app.root.ids.toolbar.title = self.text
-        #NavigationDrawerIconButton:
-        #    icon: 'database'
-        #    text: "Data-plane Statistics"
-        #    on_release:app.go_screen(5); app.root.ids.toolbar.title = self.text
-        #NavigationDrawerIconButton:
-        #    icon: 'lan-connect'
-        #    text: "Connectivity Information"
-        #    on_release:app.go_screen(6); app.root.ids.toolbar.title = self.text
-        #NavigationDrawerIconButton:
-        #    icon: 'phone'
-        #    text: "Mobility Information"
-        #    on_release:app.go_screen(7); app.root.ids.toolbar.title = self.text
-        #NavigationDrawerIconButton:
-        #    icon: 'voice'
-        #    text: "Data/Voice Service"
-        #    on_release:app.go_screen(8); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'radio-tower'
+            text: "Radio"
+            on_release:app.go_screen(6); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'database'
+            text: "Data-plane Statistics"
+            on_release:app.go_screen(7); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'lan-connect'
+            text: "Connectivity Information"
+            on_release:app.go_screen(8); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'phone'
+            text: "Mobility Information"
+            on_release:app.go_screen(9); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'voice'
+            text: "Data/Voice Service"
+            on_release:app.go_screen(10); app.root.ids.toolbar.title = self.text
 
-        #NavigationDrawerIconButton:
-        #    icon: 'diamond'
-        #    text: "Change Themes"
-        #    on_release:app.go_screen(9); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'diamond'
+            text: "Change Themes"
+            on_release:app.go_screen(11); app.root.ids.toolbar.title = self.text
 
     BoxLayout:
         orientation: 'vertical'

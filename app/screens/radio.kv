@@ -156,40 +156,39 @@
                         height: dp(1)
 
         # Display the lat and lon of the current location
-        # forbid map
         MDTab:
             name: 'map'
             text: 'Map'
 
-            # MapView:
-            #     id: mapview
-            #     lat: 34.069886
-            #     lon: -118.442950
-            #     zoom: 16
+            MapView:
+                id: mapview
+                lat: 34.069886
+                lon: -118.442950
+                zoom: 16
                 #size_hint: .5, .5
                 #pos_hint: {"x": .25, "y": .25}
 
-            #     #on_map_relocated: mapview2.sync_to(self)
-            #     #on_map_relocated: mapview3.sync_to(self)
+                #on_map_relocated: mapview2.sync_to(self)
+                #on_map_relocated: mapview3.sync_to(self)
 
-            #     MapMarker:
-            #         lat: 34.069886
-            #         lon: -118.442950
+                MapMarker:
+                    lat: 34.069886
+                    lon: -118.442950
 
-            # Toolbar:
-            #     id: maptoolbar
-            #     md_bg_color: app.theme_cls.primary_color
-            #     background_palette: 'Primary'
-            #     background_hue: '500'
-            #     title: 'None'
+            Toolbar:
+                id: maptoolbar
+                md_bg_color: app.theme_cls.primary_color
+                background_palette: 'Primary'
+                background_hue: '500'
+                title: 'None'
 
-            #     MDLabel:
-            #         text: "Longitude: {}".format(mapview.lon)
-            #         theme_text_color: 'Primary'
-            #         font_style:"Body2"
-            #         height: self.texture_size[1] + dp(40)
-            #    MDLabel:
-            #         text: "Latitude: {}".format(mapview.lat)
-            #         theme_text_color: 'Primary'
-            #         font_style:"Body2"
-            #         height: self.texture_size[1] + dp(40)
+                MDLabel:
+                    text: "Longitude: {}".format(mapview.lon)
+                    theme_text_color: 'Primary'
+                    font_style:"Body2"
+                    height: self.texture_size[1] + dp(40)
+                MDLabel:
+                    text: "Latitude: {}".format(mapview.lat)
+                    theme_text_color: 'Primary'
+                    font_style:"Body2"
+                    height: self.texture_size[1] + dp(40)

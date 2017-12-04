@@ -33,6 +33,7 @@ import time
 import traceback
 
 sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/kivymd')
+sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/mapview')
 from kivymd.button import MDIconButton
 from kivymd.date_picker import MDDatePicker
 from kivymd.dialog import MDDialog
@@ -453,7 +454,7 @@ class MobileInsightApp(App):
             #             auto_dismiss=False)
             # self.popup.open()
         else:
-            self.privacy_check()
+            # self.privacy_check()
             self.check_update()
 
     def on_stop(self):
