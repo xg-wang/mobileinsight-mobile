@@ -202,6 +202,7 @@ class MobileInsightApp(App):
         self.available_screens = screens.__all__
         self.home_screen = None
         self.log_viewer_screen = None
+
         if not create_folder():
             # MobileInsight folders unavailable. Add warnings
             Logger.error("main: SDcard is unavailable. Please check.")

@@ -16,6 +16,8 @@ The structure of this repo is organized as follows:
 └── resources: application icon and welcome screen
 ```
 
+The lastest version of MobileInsight mobile app is v3.3.0.
+
 
 ## Quickstart
 
@@ -36,10 +38,10 @@ vagrant up
 
 Depending on the network and CPU speed, the installation may take half hour or longer.
 
-Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb` (for example, the compiled APK version is 3.2.0).
+Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb` (for example, the compiled APK version is 3.3.0).
 
 ```
-adb install MobileInsight-3.2.0-debug.apk
+adb install MobileInsight-3.3.0-debug.apk
 ```
 
 For more details on using the provided `Vagrantfile` to configure the MobileInsight, please refer to the [`mobileinsight-dev` repo](https://github.com/mobile-insight/mobileinsight-dev).
@@ -195,6 +197,19 @@ Then, you can follow the usage guide and compile the application. Basically, you
 make dist
 make app_debug
 ```
+
+
+## Version History
+
++ [2017-12-05] Version 3.3 released
++ [2017-10-05] Version 3.2 released
++ [2017-09-26] Version 3.1 released
++ [2017-06-29] Version 3.0 released
++ [2017-02-07] Version 2.2 released
++ [2016-07-05] Version 2.1 released
++ [2016-04-01] Version 2.0 released
++ [2015-07-04] Version 1.0 released
+
 
 ## How to Contribute
 
