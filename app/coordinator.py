@@ -30,11 +30,10 @@ def stop_osc():
     osc.dontListen()
 
 def setup_service():
-    # android.start_service(title='MobileInsight',
-    #                       description='MobileInsight plugins have stopped.',
-    #                       arg='')
-    # Logger.info('coordinator: start background service')
-    pass
+    android.start_service(title='MobileInsight',
+                          description='MobileInsight start background service.',
+                          arg='')
+    Logger.info('coordinator: start background service')
 
 def stop_service():
     android.stop_service()

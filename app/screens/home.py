@@ -24,6 +24,7 @@ from kivy.lang import Builder
 from main import get_plugins_list, create_folder
 import main_utils
 from main_utils import current_activity
+from coordinator import COORDINATOR
 from . import MobileInsightScreenBase
 import traceback
 
@@ -531,11 +532,14 @@ class HomeScreen(MobileInsightScreenBase):
         os.remove(self.__original_filename)
 
     def on_enter(self):
-        # main_utils.stop_service()
-        pass
+        COORDINATOR.stop()
 
     def on_leave(self):
         self.stop_service()
+        Logger.info('homescreen: on leave, restart COORDINATOR')
+        COORDINATOR.start()
+        COORDINATOR.setup_analyzers()
+        COORDINATOR.send_control('START')
 
     def configure_coordinator(self):
         pass
