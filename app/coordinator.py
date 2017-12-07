@@ -19,13 +19,6 @@ class OSCConfig:
     # app side oscid
     oscid = None
 
-def setup_osc():
-    osc.init()
-    OSCConfig.oscid = osc.listen(port=OSCConfig.app_port)
-    Clock.schedule_interval(lambda *x: osc.readQueue(thread_id=OSCConfig.oscid), .5)
-    Logger.info('coordinator: setup osc at ' + str(OSCConfig.app_port))
-    Logger.info('coordinator: osc id: ' + OSCConfig.oscid)
-
 def stop_osc():
     osc.dontListen()
 
@@ -48,6 +41,7 @@ class Coordinator(object):
         self._analyzers = []
         self._screen_callbacks = []
         self._service_ready = threading.Event()
+        self._started = threading.Event()
 
     def register_analyzer(self, analyzer):
         self._analyzers.append(analyzer)
@@ -60,12 +54,16 @@ class Coordinator(object):
         Start service to setup monitor, analyzers,
         use osc to listen for data update
         '''
-        setup_osc()
+        osc.init()
+        OSCConfig.oscid = osc.listen(port=OSCConfig.app_port)
+        Logger.info('coordinator: setup osc at ' + str(OSCConfig.app_port))
+        Logger.info('coordinator: osc id: ' + OSCConfig.oscid)
         setup_service()
         osc.bind(OSCConfig.oscid, self.event_callback, OSCConfig.event_addr)
         Logger.info('coordinator: coordinator bind to ' + OSCConfig.event_addr)
         osc.bind(OSCConfig.oscid, self.control_callback, OSCConfig.control_addr)
         Logger.info('coordinator: coordinator bind to ' + OSCConfig.control_addr)
+        self._started.set()
         listen_thread = threading.Thread(target=self.listen_osc, args=(OSCConfig.oscid,))
         listen_thread.start()
         Logger.info('coordinator: ' + 'listen thread starts')
@@ -76,6 +74,9 @@ class Coordinator(object):
 
     def listen_osc(self, oscid):
         while True:
+            if self._started.is_set() is not True:
+                Logger.info('coordinator: quit listen_osc thread')
+                return
             osc.readQueue(thread_id=oscid)
             sleep(.5)
 
@@ -99,9 +100,10 @@ class Coordinator(object):
         send_thread.start()
 
     def stop(self):
+        self._started.clear()
         stop_osc()
         stop_service()
-        Logger.info('coordinator: ' + '// stops does nothing right now')
+        Logger.info('coordinator: stops osc, service, clear flag')
 
 # only create a singleton coordinator for app
 # should always import this coordinator
