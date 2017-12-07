@@ -68,13 +68,17 @@ class Control(object):
             Logger.info('control: to STOP')
             self.monitor.stop()
         elif (value == 'START'):
-            Logger.info('control: to START')
-            self._analyzers_ready.wait()
-            self.monitor.run()
+            threading.Thread(target=self.run_monitor).start()
         else:
             analyzer_names = [s for s in value.split(',') if s != '']
-            Logger.info('control: ' + str(analyzer_names))
+            Logger.info('control: analyzers: ' + str(analyzer_names))
             self.set_analyzers(analyzer_names)
+
+    def run_monitor(self):
+        Logger.info('control: wait for analyzers')
+        self._analyzers_ready.wait()
+        Logger.info('control: to START')
+        self.monitor.run()
 
     def set_analyzers(self, names):
 

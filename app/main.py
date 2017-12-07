@@ -327,8 +327,6 @@ class MobileInsightApp(App):
         for i in range(len(self.available_screens)):
             self.screens[i] = getattr(screens, self.available_screens[i])()
         self.home_screen = self.screens[0]
-        COORDINATOR.setup_analyzers()
-        COORDINATOR.send_control('START')
         self.root.ids.scr_mngr.switch_to(self.screens[0])
 
     def go_screen(self, idx):

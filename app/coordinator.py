@@ -101,6 +101,7 @@ class Coordinator(object):
 
     def stop(self):
         self._started.clear()
+        self._service_ready.clear()
         stop_osc()
         stop_service()
         Logger.info('coordinator: stops osc, service, clear flag')
