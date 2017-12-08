@@ -162,8 +162,8 @@
 
             MapView:
                 id: mapview
-                lat: 34.069886
-                lon: -118.442950
+                lat: app.location[0]
+                lon: app.location[1]
                 zoom: 16
                 #size_hint: .5, .5
                 #pos_hint: {"x": .25, "y": .25}
@@ -172,8 +172,8 @@
                 #on_map_relocated: mapview3.sync_to(self)
 
                 MapMarker:
-                    lat: 34.069886
-                    lon: -118.442950
+                    lat: app.location[0]
+                    lon: app.location[1]
 
             Toolbar:
                 id: maptoolbar

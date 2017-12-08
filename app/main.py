@@ -21,6 +21,7 @@ from kivy.uix.boxlayout import BoxLayout
 import main_utils
 from main_utils import current_activity
 import screens
+from service import mi2app_utils
 from coordinator import COORDINATOR
 import datetime
 import functools
@@ -188,6 +189,7 @@ class MobileInsightApp(App):
     theme_cls = ThemeManager()
     previous_date = ObjectProperty()
     title = "MobileInsight"
+    location = ListProperty([])
 
     index = NumericProperty(0)
     current_title = StringProperty()
@@ -202,6 +204,7 @@ class MobileInsightApp(App):
         self.available_screens = screens.__all__
         self.home_screen = None
         self.log_viewer_screen = None
+        self.location = [34.069886, -118.442950]
 
         if not create_folder():
             # MobileInsight folders unavailable. Add warnings
@@ -209,6 +212,9 @@ class MobileInsightApp(App):
         main_utils.init_libs()
         main_utils.check_security_policy()
         COORDINATOR.start() # FIXME: DEADLOCK HERE!!!
+        cur_location = mi2app_utils.get_current_location()
+        if cur_location:
+            self.location = cur_location
 
     def __del__(self):
         Logger.error("__del__")
