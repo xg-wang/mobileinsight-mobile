@@ -1,2 +1,59 @@
 <DatavoiceScreen>:
     name: 'datavoice'
+    MDLabel:
+        text: 'EMM Basis'
+        theme_text_color: 'Primary'
+        font_style:"Title"
+        size_hint_y: None
+        pos_hint: {'center_x': 0.5, 'center_y': 0.93}
+        halign: 'center'
+    MDRaisedButton:
+        text: "Registered"
+        elevation_normal: 2
+        opposite_colors: True
+        pos_hint: {'center_x': 0.25, 'center_y': 0.83}
+        disabled: not root.EMM_State
+        md_bg_color: get_color_from_hex(colors['Amber']['700'])
+    MDIconButton:
+        icon: 'arrow-left' if root.EMM_State else 'arrow-right'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.48, 'center_y': 0.83}
+        theme_text_color: 'Custom'
+        text_color: [1,0.75686,0.02745,1]
+    MDRaisedButton:
+        text: "Disregistered"
+        elevation_normal: 2
+        opposite_colors: True
+        pos_hint: {'center_x': 0.75, 'center_y': 0.83}
+        disabled: root.EMM_State
+        md_bg_color: get_color_from_hex(colors['Amber']['700'])
+    MDSeparator:
+        height: dp(1)
+        pos_hint: {'center_x': 0.5, 'center_y': 0.73}
+    MDLabel:
+        text: 'ESM Basis'
+        theme_text_color: 'Primary'
+        font_style:"Title"
+        size_hint_y: None
+        pos_hint: {'center_x': 0.5, 'center_y': 0.66}
+        halign: 'center'
+    MDRaisedButton:
+        text: "Connected"
+        elevation_normal: 2
+        opposite_colors: True
+        pos_hint: {'center_x': 0.25, 'center_y': 0.56}
+        disabled: not root.ESM_State
+        md_bg_color: get_color_from_hex(colors['Amber']['700'])
+    MDIconButton:
+        icon: 'arrow-left' if root.ESM_State else 'arrow-right'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.48, 'center_y': 0.56}
+        theme_text_color: 'Custom'
+        text_color: [1,0.75686,0.02745,1]
+    MDRaisedButton:
+        text: "Disconnected"
+        elevation_normal: 2
+        opposite_colors: True
+        pos_hint: {'center_x': 0.75, 'center_y': 0.56}
+        disabled: root.ESM_State
+        md_bg_color: get_color_from_hex(colors['Amber']['700'])

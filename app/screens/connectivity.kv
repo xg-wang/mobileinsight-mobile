@@ -1,2 +1,81 @@
 <ConnectivityScreen>:
     name: 'connectivity'
+    MDLabel:
+        text: 'LTE_RRC_CONNECTED'
+        theme_text_color: 'Primary'
+        font_style: "Title"
+        size_hint_y: None
+        halign: 'center'
+        pos_hint: {'center_x': 0.5, 'center_y': 0.93}
+    MDRaisedButton:
+        text: "                    Short_DRX                    "
+        elevation_normal: 2
+        opposite_colors: True
+        pos_hint: {'center_x': 0.5, 'center_y': 0.83}
+        disabled: True
+    MDIconButton:
+        icon: 'arrow-up'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.23, 'center_y': 0.765}
+        theme_text_color: 'Custom'
+        text_color: [1,0.921568,0.23137,1]
+    MDIconButton:
+        icon: 'arrow-down'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.27, 'center_y': 0.765}
+        theme_text_color: 'Custom'
+        text_color: [1,0.921568,0.23137,1]
+    MDIconButton:
+        icon: 'arrow-down'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.75, 'center_y': 0.765}
+        theme_text_color: 'Custom'
+        text_color: [1,0.921568,0.23137,1]
+    MDRaisedButton:
+        text: "CRX"
+        elevation_normal: 2
+        opposite_colors: True
+        pos_hint: {'center_x': 0.25, 'center_y': 0.7}
+        disabled: True
+        md_bg_color: get_color_from_hex(colors['Amber']['500'])
+    MDRaisedButton:
+        text: "LONG_CRX"
+        elevation_normal: 2
+        opposite_colors: True
+        pos_hint: {'center_x': 0.75, 'center_y': 0.7}
+        disabled: True
+        md_bg_color: get_color_from_hex(colors['Amber']['500'])
+    MDIconButton:
+        icon: 'arrow-left'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.5, 'center_y': 0.72}
+        theme_text_color: 'Custom'
+        text_color: [1,0.921568,0.23137,1]
+    MDIconButton:
+        icon: 'arrow-right'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.5, 'center_y': 0.68}
+        theme_text_color: 'Custom'
+        text_color: [1,0.921568,0.23137,1]
+    MDSeparator:
+        height: dp(1)
+        pos_hint: {'center_x': 0.5, 'center_y': 0.65}
+    MDIconButton:
+        icon: 'arrow-up'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.48, 'center_y': 0.6}
+        theme_text_color: 'Custom'
+        text_color: [1,0.921568,0.23137,1]
+    MDIconButton:
+        icon: 'arrow-down'
+        opposite_colors: True
+        pos_hint: {'center_x': 0.52, 'center_y': 0.6}
+        theme_text_color: 'Custom'
+        text_color: [1,0.921568,0.23137,1]
+    MDRaisedButton:
+        text: "                   LTE_RRC_IDLE                   "
+        elevation_normal: 2
+        opposite_colors: True
+        pos_hint: {'center_x': 0.5, 'center_y': 0.52}
+        disabled: False
+        md_bg_color: get_color_from_hex(colors['Amber']['500'])

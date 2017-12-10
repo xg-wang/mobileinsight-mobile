@@ -34,7 +34,7 @@ import traceback
 
 sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/kivymd')
 sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/mapview')
-from kivymd.button import MDIconButton
+from kivymd.button import MDIconButton, MDRaisedButton
 from kivymd.date_picker import MDDatePicker
 from kivymd.dialog import MDDialog
 from kivymd.label import MDLabel
