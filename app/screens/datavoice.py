@@ -8,7 +8,7 @@ Builder.load_file('screens/datavoice.kv')
 class DatavoiceScreen(MobileInsightScreenBase):
     
     EMM_State = BooleanProperty(False)
-    ESM_State = BooleanProperty(True)
+    ESM_State = BooleanProperty(False)
 
     def on_EMM_State(self,instance,value):
     	pass
@@ -27,5 +27,11 @@ class DatavoiceScreen(MobileInsightScreenBase):
         Logger.info('DataVoiceScreen: ' + decoded.type_id) 
         Logger.info('String: ' + decoded.data)
         string = decoded.data 
-        # self.EMM_State = string
-        # self.ESM_State = string
+        if string == 'ESM_CON':
+            self.ESM_State = True
+        elif string == 'ESM_DISCON':
+            self.ESM_State = False
+        elif string == 'EMM_REGISTERED' or string == 'EMM_REGISTERED_INITIATED':
+            self.EMM_State = True
+        elif string == 'EMM_DEREGISTERED' or string == 'EMM_DEREGISTERED_INITIATED':
+            self.EMM_State = False
