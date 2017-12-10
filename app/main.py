@@ -17,6 +17,7 @@ from kivy.utils import platform
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
 import main_utils
 from main_utils import current_activity
@@ -212,9 +213,6 @@ class MobileInsightApp(App):
         main_utils.init_libs()
         main_utils.check_security_policy()
         COORDINATOR.start() # FIXME: DEADLOCK HERE!!!
-        cur_location = main_utils.get_current_location()
-        if cur_location:
-            self.location = cur_location
 
     def __del__(self):
         Logger.error("__del__")
@@ -314,6 +312,11 @@ class MobileInsightApp(App):
                     # Update the default value and setting menu
                     config.setdefaults(APP_NAME, default_val)
 
+    def get_location(self):
+        cur_location = main_utils.get_current_location()
+        if cur_location:
+            self.location = cur_location
+
     def build(self):
         # Force to initialize all configs in .mobileinsight.ini
         # This prevents missing config due to existence of older-version .mobileinsight.ini
@@ -334,6 +337,7 @@ class MobileInsightApp(App):
             self.screens[i] = getattr(screens, self.available_screens[i])()
         self.home_screen = self.screens[0]
         self.root.ids.scr_mngr.switch_to(self.screens[0])
+        Clock.schedule_interval(self.get_location, 1)
 
     def go_screen(self, idx):
         if self.index ==  idx:
