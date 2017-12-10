@@ -11,6 +11,7 @@ Builder.load_file('screens/radio.kv')
 class RadioScreen(MobileInsightScreenBase):
 
     current_log = StringProperty('')
+    rsrq = NumericProperty()
 
     def configure_coordinator(self):
         self.coordinator.register_analyzer('LteNasAnalyzer')
@@ -22,10 +23,7 @@ class RadioScreen(MobileInsightScreenBase):
         string = str(event)
         self.current_log = string[:20]
 
-    rvalue = NumericProperty(40)
 
-    def callback(self,dt):
-        self.rvalue =round(random.random()*100,2)
         
-    def on_rvalue(self,instance,value):
+    def on_rsrq(self,instance,value):
         pass
