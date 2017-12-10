@@ -12,7 +12,8 @@ class RadioScreen(MobileInsightScreenBase):
 
     current_log = StringProperty('')
     rsrq = NumericProperty()
-
+    rssi = NumericProperty()
+    rsrp = NumericProperty()
     def configure_coordinator(self):
         self.coordinator.register_analyzer('LteNasAnalyzer')
         self.coordinator.register_analyzer('LteRrcAnalyzer')
@@ -26,4 +27,8 @@ class RadioScreen(MobileInsightScreenBase):
 
         
     def on_rsrq(self,instance,value):
+        pass
+    def on_rsrp(self,instance,value):
+        pass
+    def on_rssi(self,instance,value):
         pass
