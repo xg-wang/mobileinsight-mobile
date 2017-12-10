@@ -312,7 +312,7 @@ class MobileInsightApp(App):
                     # Update the default value and setting menu
                     config.setdefaults(APP_NAME, default_val)
 
-    def get_location(self):
+    def get_location(self,dt):
         cur_location = main_utils.get_current_location()
         if cur_location:
             self.location = cur_location

@@ -1,5 +1,6 @@
 from . import MobileInsightScreenBase
 from kivy.lang import Builder
+from main_utils import Event 
 
 Builder.load_file('screens/connectivity.kv')
 
