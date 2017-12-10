@@ -3,6 +3,8 @@ from kivy.lang import Builder
 from kivy.properties import NumericProperty, StringProperty
 from kivy.logger import Logger
 
+from kivy.clock import Clock
+import random
 
 Builder.load_file('screens/radio.kv')
 
@@ -19,3 +21,11 @@ class RadioScreen(MobileInsightScreenBase):
         Logger.info('DemoScreen: ' + str(event))
         string = str(event)
         self.current_log = string[:20]
+
+    rvalue = NumericProperty(40)
+
+    def callback(self,dt):
+        self.rvalue =round(random.random()*100,2)
+        
+    def on_rvalue(self,instance,value):
+        pass

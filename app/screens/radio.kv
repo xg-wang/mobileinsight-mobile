@@ -122,38 +122,41 @@
 
                     MDSeparator:
                         height: dp(1)
-                    MDLabel:
-                        text: 'Power Meas'
-                        theme_text_color: 'Primary'
-                        font_style:"Body2"
-                        size_hint_y: None
-                        halign: 'center'
-                    MDSeparator:
-                        height: dp(1)
-                    MDLabel:
-                        text: 'Modulation Coding Scheme'
-                        theme_text_color: 'Primary'
-                        font_style:"Body2"
-                        size_hint_y: None
-                        halign: 'center'
-                    MDSeparator:
-                        height: dp(1)
-                    MDLabel:
-                        text: 'Channel Quality'
-                        theme_text_color: 'Primary'
-                        font_style:"Body2"
-                        size_hint_y: None
-                        halign: 'center'
-                    MDSeparator:
-                        height: dp(1)
-                    MDLabel:
-                        text: 'Radio Configurations'
-                        theme_text_color: 'Primary'
-                        font_style:"Body2"
-                        size_hint_y: None
-                        halign: 'center'
-                    MDSeparator:
-                        height: dp(1)
+
+                    MDChart:
+                        current:root.rvalue
+                    # MDLabel:
+                    #     text: 'Power Meas'
+                    #     theme_text_color: 'Primary'
+                    #     font_style:"Body2"
+                    #     size_hint_y: None
+                    #     halign: 'center'
+                    # MDSeparator:
+                    #     height: dp(1)
+                    # MDLabel:
+                    #     text: 'Modulation Coding Scheme'
+                    #     theme_text_color: 'Primary'
+                    #     font_style:"Body2"
+                    #     size_hint_y: None
+                    #     halign: 'center'
+                    # MDSeparator:
+                    #     height: dp(1)
+                    # MDLabel:
+                    #     text: 'Channel Quality'
+                    #     theme_text_color: 'Primary'
+                    #     font_style:"Body2"
+                    #     size_hint_y: None
+                    #     halign: 'center'
+                    # MDSeparator:
+                    #     height: dp(1)
+                    # MDLabel:
+                    #     text: 'Radio Configurations'
+                    #     theme_text_color: 'Primary'
+                    #     font_style:"Body2"
+                    #     size_hint_y: None
+                    #     halign: 'center'
+                    # MDSeparator:
+                    #     height: dp(1)
 
         # Display the lat and lon of the current location
         MDTab:

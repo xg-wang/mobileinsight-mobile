@@ -45,6 +45,7 @@ from kivymd.selectioncontrols import MDCheckbox
 from kivymd.snackbar import Snackbar
 from kivymd.theming import ThemeManager
 from kivymd.time_picker import MDTimePicker
+from kivymd.chart import MDChart
 
 # not working
 # SERVICE_DIR = os.path.join(os.getcwd(), 'service')
