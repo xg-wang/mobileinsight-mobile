@@ -449,3 +449,22 @@ def check_diag_mode():
             return False
         else:
             return True
+
+
+class Event(object):
+    '''The event is used to trigger the analyzer and perform some actions.
+
+    The event can be raised by a trace collector (a message) or an analyzer.
+    An event is a triple of (timestamp, type, data).
+    '''
+
+    def __init__(self, encoded):
+        [timestamp, type_id, data] = encoded.split(':')
+        self.timestamp = timestamp
+        self.type_id = type_id
+        self.data = data
+
+    def __str__(self):
+        return ':'.join([str(self.timestamp),
+                str(self.type_id),
+                str(self.data)])

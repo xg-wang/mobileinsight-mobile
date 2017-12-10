@@ -5,6 +5,7 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty
 from mobile_insight.analyzer import LteNasAnalyzer, UmtsNasAnalyzer
 from mobile_insight.monitor import OnlineMonitor
+from main_utils import Event
 import traceback
 from . import MobileInsightScreenBase
 from kivy.logger import Logger
@@ -24,7 +25,9 @@ class DemoScreen(MobileInsightScreenBase):
         self.coordinator.register_callback(self._demo_callback)
 
     def _demo_callback(self, event):
-        Logger.info('DemoScreen: ' + str(event))
-        string = str(event)
-        Logger.info('DemoScreen: ' + 'show event')
+        decoded = Event(event)
+        Logger.info('DemoScreen: ' + decoded.type_id)
+        if decoded.type_id != 'TYPE':
+            return
+        string = decoded.data
         self.current_log = string
