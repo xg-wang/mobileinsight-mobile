@@ -21,7 +21,6 @@ from kivy.uix.boxlayout import BoxLayout
 import main_utils
 from main_utils import current_activity
 import screens
-from service import mi2app_utils
 from coordinator import COORDINATOR
 import datetime
 import functools
@@ -212,7 +211,7 @@ class MobileInsightApp(App):
         main_utils.init_libs()
         main_utils.check_security_policy()
         COORDINATOR.start() # FIXME: DEADLOCK HERE!!!
-        cur_location = mi2app_utils.get_current_location()
+        cur_location = main_utils.get_current_location()
         if cur_location:
             self.location = cur_location
 

@@ -34,7 +34,18 @@ FileOutputStream = autoclass('java.io.FileOutputStream')
 
 Context = autoclass('android.content.Context')
 telephonyManager = current_activity.getSystemService(Context.TELEPHONY_SERVICE)
+locationManager = current_activity.getSystemService(Context.LOCATION_SERVICE)
+LocationManager = autoclass('android.location.LocationManager')
 androidOsBuild = autoclass("android.os.Build")
+
+def get_current_location():
+    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+    if not location:
+        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+    if location:
+        return (location.getLatitude(),location.getLongitude())
+    else:
+        return None
 
 class ChipsetType:
     """
