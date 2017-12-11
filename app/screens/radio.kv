@@ -42,12 +42,12 @@
                                 halign: 'center'
                                 height: dp(25)
                             MDProgressBar:
-                                value: 45
+                                value: root.rssi
                                 halign: 'center'
                                 rgbr: '0000FF'
                             MDLabel:
-                                text: '45dbm'
-                                #text: str(root.rssi)+'dbm'
+                                #text: '45dbm'
+                                text: str(root.rssi)+'dbm'
                                 theme_text_color: 'Primary'
                                 font_style:"Body2"
                                 size_hint_y: None
@@ -63,12 +63,12 @@
                                 halign: 'center'
                                 height: dp(25)
                             MDProgressBar:
-                                value: 6
+                                value: root.rsrp
                                 halign: 'center'
                                 rgbr: '0000FF'
                             MDLabel:
-                                text: '-74dbm'
-                                #text: str(root.rsrp)+'dbm'
+                                #text: '-74dbm'
+                                text: str(root.rsrp)+'dbm'
                                 theme_text_color: 'Primary'
                                 font_style:"Body2"
                                 size_hint_y: None
@@ -84,13 +84,13 @@
                                 halign: 'center'
                                 height: dp(25)
                             MDProgressBar:
-                                value: 73
+                                value: root.rsrq
                                 halign: 'center'
                                 rgbr: '0000FF'
                             MDLabel:
-                                text: '-4'
+                                #text: '-4'
                                 #ADD rsrq value
-                                #text: str(root.rsrq)
+                                text: str(root.rsrq)
                                 theme_text_color: 'Primary'
                                 font_style:"Body2"
                                 size_hint_y: None
@@ -128,7 +128,16 @@
                         height: dp(1)
 
                     MDChart:
-                        current:1
+                        current:root.rsrq
+                    BoxLayout:
+                        size_hint_y: None
+                        MDLabel:
+                            text: 'RSRQ'
+                            theme_text_color: 'Primary'
+                            font_style:"Caption"
+                            size_hint_y: None
+                            halign: 'center'
+                            height: self.texture_size[1] - dp(10)
                     # MDLabel:
                     #     text: 'Power Meas'
                     #     theme_text_color: 'Primary'
