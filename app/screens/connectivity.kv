@@ -12,7 +12,7 @@
         elevation_normal: 2
         opposite_colors: True
         pos_hint: {'center_x': 0.5, 'center_y': 0.83}
-        disabled: True
+        disabled: not root.Short_DRX_State
     MDIconButton:
         icon: 'arrow-up'
         opposite_colors: True
@@ -36,14 +36,14 @@
         elevation_normal: 2
         opposite_colors: True
         pos_hint: {'center_x': 0.25, 'center_y': 0.7}
-        disabled: True
+        disabled: not root.CRX_State
         md_bg_color: get_color_from_hex(colors['Amber']['700'])
     MDRaisedButton:
-        text: "LONG_CRX"
+        text: "LONG_DRX"
         elevation_normal: 2
         opposite_colors: True
         pos_hint: {'center_x': 0.75, 'center_y': 0.7}
-        disabled: True
+        disabled: not root.Long_DRX_State
         md_bg_color: get_color_from_hex(colors['Amber']['700'])
     MDIconButton:
         icon: 'arrow-left'
@@ -77,5 +77,5 @@
         elevation_normal: 2
         opposite_colors: True
         pos_hint: {'center_x': 0.5, 'center_y': 0.52}
-        disabled: False
+        disabled: not root.LTE_RRC_IDLE_State
         md_bg_color: get_color_from_hex(colors['Amber']['700'])
