@@ -190,12 +190,12 @@
                 title: 'None'
 
                 MDLabel:
-                    text: "Longitude: {}".format(mapview.lon)
+                    text: "Longitude: {}".format(app.location[1])
                     theme_text_color: 'Primary'
                     font_style:"Body2"
                     height: self.texture_size[1] + dp(40)
                 MDLabel:
-                    text: "Latitude: {}".format(mapview.lat)
+                    text: "Latitude: {}".format(app.location[0])
                     theme_text_color: 'Primary'
                     font_style:"Body2"
                     height: self.texture_size[1] + dp(40)
