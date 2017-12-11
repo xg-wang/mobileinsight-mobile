@@ -2,6 +2,7 @@ from . import MobileInsightScreenBase
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty
 from main_utils import Event 
+from kivy.logger import Logger
 
 Builder.load_file('screens/datavoice.kv')
 
