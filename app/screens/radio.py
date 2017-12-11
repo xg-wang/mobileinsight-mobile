@@ -3,6 +3,8 @@ from kivy.lang import Builder
 from kivy.properties import NumericProperty, StringProperty
 from kivy.logger import Logger
 
+from main_utils import Event
+
 from kivy.clock import Clock
 import random
 
@@ -17,15 +19,17 @@ class RadioScreen(MobileInsightScreenBase):
     def configure_coordinator(self):
         self.coordinator.register_analyzer('LteNasAnalyzer')
         self.coordinator.register_analyzer('LteRrcAnalyzer')
-        self.coordinator.register_callback(self._demo_callback)
+        self.coordinator.register_callback(self._radio_callback)
 
-    def _demo_callback(self, event):
-        Logger.info('DemoScreen: ' + str(event))
-        string = str(event)
-        self.current_log = string[:20]
+    def _radio_callback(self, event):
+        event = Event(event)
+        if event.type_id == 'rsrp':
+            self.rsrp = event.data
+            self.rssi = self.rsrp - 141 # little hack
+        if event.type_id == 'rsrq':
+            self.rsrq = event.data
 
 
-        
     def on_rsrq(self,instance,value):
         pass
     def on_rsrp(self,instance,value):

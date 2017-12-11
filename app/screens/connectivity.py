@@ -18,7 +18,7 @@ class ConnectivityScreen(MobileInsightScreenBase):
 
     def on_CRX_State(self,instance,value):
     	pass
-    
+
     def on_Long_DRX_State(self,instance,value):
     	pass
 
@@ -30,11 +30,10 @@ class ConnectivityScreen(MobileInsightScreenBase):
         self.coordinator.register_callback(self._connectivity_callback)
 
     def _connectivity_callback(self, event):
-        decoded = Event(event) 
-        if decoded.type_id != 'RRC' and decoded.type_id != 'DRX': 
-            return 
-        Logger.info('ConnectivityScreen: ' + decoded.type_id) 
-        Logger.info('String: ' + decoded.data)
+        decoded = Event(event)
+        if decoded.type_id != 'RRC' and decoded.type_id != 'DRX':
+            return
+        Logger.info('ConnectivityScreen: ' + decoded.data)
         string = decoded.data
         if string == 'CRX':
             self.CRX_State = True
