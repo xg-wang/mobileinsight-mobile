@@ -26,7 +26,6 @@ class DemoScreen(MobileInsightScreenBase):
 
     def _demo_callback(self, event):
         decoded = Event(event)
-        Logger.info('DemoScreen: ' + decoded.type_id)
         if decoded.type_id != 'TYPE':
             return
         string = decoded.data

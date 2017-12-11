@@ -6,6 +6,8 @@ import os
 import threading
 import traceback
 
+from mobile_insight.monitor.dm_collector import dm_collector_c
+
 
 class OSCConfig:
     # event addr used to send/recv event data
@@ -35,7 +37,19 @@ class Control(object):
         cache_directory = get_cache_dir()
         Logger.info('control: cache_dir: ' + str(cache_directory))
         log_directory = os.path.join(cache_directory, "mi2log")
+
         self.monitor = monitor.OnlineMonitor()
+
+        # offline = monitor.OfflineReplayer()
+        # Logger.info('control: offline monitor created')
+        # for st in set(dm_collector_c.log_packet_types):
+        #     offline.enable_log(st)
+        # curr_path = '/sdcard/mobileinsight/log'
+        # file = os.path.join(curr_path, 'diag_log_20171117_171901_352689080861432_Google-Pixel_-.mi2log')
+        # Logger.info('control: select ' + file)
+        # offline.set_input_path(file)
+        # self.monitor = offline
+
         Logger.info('control: monitor created: ' + repr(self.monitor))
         self.monitor.set_log_directory(str(log_directory))
         Logger.info('control: monitor log dir: ' + str(log_directory))
