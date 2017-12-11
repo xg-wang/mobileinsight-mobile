@@ -459,7 +459,7 @@ class Event(object):
     '''
 
     def __init__(self, encoded):
-        [timestamp, type_id, data] = encoded.split(':')
+        [timestamp, type_id, data] = encoded.split('\t')
         self.timestamp = timestamp
         self.type_id = type_id
         self.data = data
